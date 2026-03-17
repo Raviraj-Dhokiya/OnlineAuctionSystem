@@ -12,20 +12,21 @@
     /* ── Chat UI Styles ─────────────────────────────────────────────────── */
     .chat-section {
       margin-top: 2rem;
-      background: rgba(15,23,42,0.6);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: #fff;
+      border: 1px solid #e0e0e0;
       border-radius: 14px;
       overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
     }
     .chat-header {
-      background: linear-gradient(135deg, #1e3a5f, #0f2d4a);
+      background: #1a1a2e;
       padding: 0.9rem 1.2rem;
       display: flex;
       align-items: center;
       gap: 0.6rem;
       font-weight: 600;
       font-size: 0.95rem;
-      color: #e2e8f0;
+      color: #fff;
     }
     .chat-status-dot {
       width: 8px; height: 8px;
@@ -44,7 +45,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      background: rgba(0,0,0,0.2);
+      background: #f8f9fb;
     }
     .chat-msg {
       display: flex;
@@ -59,19 +60,20 @@
     .chat-msg .avatar {
       width: 30px; height: 30px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      background: linear-gradient(135deg, #6c63ff, #8b5cf6);
       display: flex; align-items: center; justify-content: center;
       font-size: 0.75rem; font-weight: 700;
       color: white; flex-shrink: 0;
     }
     .chat-msg .bubble {
-      background: rgba(255,255,255,0.07);
+      background: #e8e8f0;
       border-radius: 10px 10px 10px 2px;
       padding: 0.45rem 0.75rem;
       max-width: 85%;
     }
     .chat-msg.mine .bubble {
-      background: rgba(59,130,246,0.25);
+      background: #f0eeff;
+      border: 1px solid #c5bfff;
       border-radius: 10px 10px 2px 10px;
       margin-left: auto;
     }
@@ -79,18 +81,18 @@
     .chat-msg .sender {
       font-size: 0.72rem;
       font-weight: 600;
-      color: #60a5fa;
+      color: #6c63ff;
       margin-bottom: 2px;
     }
-    .chat-msg.mine .sender { color: #a78bfa; text-align: right; }
+    .chat-msg.mine .sender { color: #574fd6; text-align: right; }
     .chat-msg .text {
       font-size: 0.85rem;
-      color: #cbd5e1;
+      color: #1a1a2e;
       word-break: break-word;
     }
     .chat-msg .ts {
       font-size: 0.68rem;
-      color: #475569;
+      color: #999;
       margin-top: 2px;
       text-align: right;
     }
@@ -100,7 +102,7 @@
     .chat-msg.system-msg .bubble {
       background: transparent;
       font-size: 0.75rem;
-      color: #64748b;
+      color: #888;
       font-style: italic;
       text-align: center;
       padding: 0.2rem 0.5rem;
@@ -109,41 +111,49 @@
       display: flex;
       gap: 0.5rem;
       padding: 0.75rem 1rem;
-      background: rgba(0,0,0,0.15);
-      border-top: 1px solid rgba(255,255,255,0.06);
+      background: #f0f0f7;
+      border-top: 1px solid #e0e0e0;
     }
     .chat-input-row input {
       flex: 1;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
+      background: #fff;
+      border: 1.5px solid #ddd;
       border-radius: 8px;
       padding: 0.5rem 0.8rem;
-      color: #e2e8f0;
+      color: #1a1a2e;
       font-size: 0.88rem;
       outline: none;
       transition: border-color 0.2s;
     }
+    .chat-input-row input::placeholder { color: #aaa; }
     .chat-input-row input:focus {
-      border-color: #3b82f6;
-      background: rgba(59,130,246,0.08);
+      border-color: #6c63ff;
+      background: #fff;
+    }
+    .chat-input-row input:disabled {
+      background: #f0f0f0;
+      color: #aaa;
     }
     .chat-input-row button {
-      padding: 0.5rem 1rem;
-      background: #3b82f6;
+      padding: 0.5rem 1.1rem;
+      background: #6c63ff;
       border: none;
       border-radius: 8px;
       color: white;
       font-size: 0.88rem;
+      font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
     }
-    .chat-input-row button:hover { background: #2563eb; }
+    .chat-input-row button:hover:not(:disabled) { background: #574fd6; }
+    .chat-input-row button:disabled { background: #ccc; cursor: not-allowed; }
     .chat-reconnect-bar {
-      background: #7c2d12;
-      color: #fca5a5;
+      background: #ffe6e6;
+      color: #c0392b;
+      border-top: 1px solid #f5c6c6;
       font-size: 0.78rem;
       text-align: center;
-      padding: 0.3rem;
+      padding: 0.4rem;
       display: none;
     }
 
@@ -155,47 +165,54 @@
       padding: 0.5rem 1rem;
       border-radius: 8px;
       font-size: 0.88rem;
+      font-weight: 600;
       cursor: pointer;
       text-decoration: none;
       transition: all 0.2s;
-      border: 1px solid rgba(255,255,255,0.15);
       margin-top: 0.8rem;
     }
     .watchlist-btn.watching {
-      background: rgba(251,191,36,0.15);
-      color: #fbbf24;
-      border-color: #fbbf24;
+      background: #fff8e1;
+      color: #856404;
+      border: 1.5px solid #f0c040;
+    }
+    .watchlist-btn.watching:hover {
+      background: #fff3cd;
     }
     .watchlist-btn.not-watching {
-      background: rgba(255,255,255,0.06);
-      color: #94a3b8;
+      background: #f0eeff;
+      color: #6c63ff;
+      border: 1.5px solid #c5bfff;
     }
-    .watchlist-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .watchlist-btn.not-watching:hover {
+      background: #e8e4ff;
+    }
 
     /* ── Min Bid Suggestion ─────────────────────────────────────────────── */
     .min-bid-hint {
-      background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(139,92,246,0.12));
-      border: 1px solid rgba(59,130,246,0.3);
+      background: #eef3ff;
+      border: 1.5px solid #b0c4ff;
       border-radius: 8px;
-      padding: 0.6rem 1rem;
+      padding: 0.65rem 1rem;
       margin-bottom: 0.8rem;
-      font-size: 0.85rem;
-      color: #93c5fd;
+      font-size: 0.87rem;
+      color: #2d46b9;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
-    .min-bid-hint strong { color: #60a5fa; font-size: 1rem; }
+    .min-bid-hint strong { color: #1a32a0; font-size: 1rem; }
 
     /* ── Time Extension Notice ──────────────────────────────────────────── */
     .extension-notice {
-      background: rgba(234,179,8,0.12);
-      border: 1px solid rgba(234,179,8,0.35);
+      background: #fff8e1;
+      border: 1.5px solid #ffe082;
       border-radius: 8px;
-      padding: 0.55rem 0.9rem;
+      padding: 0.6rem 0.9rem;
       font-size: 0.82rem;
-      color: #fde047;
-      margin-top: 0.5rem;
+      color: #856404;
+      margin-top: 0.8rem;
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -403,24 +420,16 @@
   <div id="notif-bar" class="notif-bar" style="display:none;"></div>
 
   <script>
-    // ─── Item & User Context ───────────────────────────────────────────────────
-    const CURRENT_ITEM_ID = ${ item.itemId };
+    // --- Item & User Context ---
+    const CURRENT_ITEM_ID = parseInt("${item.itemId}", 10);
     const MY_USERNAME     = "${sessionScope.username}";
-    const CHAT_PORT       = 9092;
-    const CHAT_HOST       = location.hostname; // same server
+    const CTX             = "${pageContext.request.contextPath}";
 
-    // ─── Chat via WebSocket bridge (HTTP polling fallback) ─────────────────────
-    // AuctionChatServer is a raw TCP socket server on port 9092.
-    // Since browsers cannot use raw TCP sockets, we poll a /ChatPollServlet
-    // for messages and post via /ChatSendServlet.
-    // This gives a smooth chat experience without requiring WebSocket upgrade
-    // of the existing AuctionChatServer.
+    let lastMsgId = 0;
+    let pollTimer = null;
+    let chatReady = false;
 
-    const CTX = "${pageContext.request.contextPath}";
-    let lastMsgId  = 0;
-    let pollTimer  = null;
-    let chatReady  = false;
-    const chatDot  = document.getElementById('chat-dot');
+    const chatDot   = document.getElementById('chat-dot');
     const chatLabel = document.getElementById('chat-status-label');
     const chatInput = document.getElementById('chat-input');
     const chatSend  = document.getElementById('chat-send-btn');
@@ -428,50 +437,52 @@
     const reconnBar = document.getElementById('chat-reconnect-bar');
 
     function setChatOnline() {
-      chatDot.style.background   = '#22c55e';
-      chatDot.style.boxShadow    = '0 0 6px #22c55e';
-      chatLabel.textContent      = 'Connected';
-      chatLabel.style.color      = '#22c55e';
-      chatInput.disabled         = false;
-      chatSend.disabled          = false;
-      reconnBar.style.display    = 'none';
+      chatDot.style.background = '#22c55e';
+      chatDot.style.boxShadow  = '0 0 6px #22c55e';
+      chatLabel.textContent    = 'Connected';
+      chatLabel.style.color    = '#6ee7b7';
+      chatInput.disabled       = false;
+      chatSend.disabled        = false;
+      reconnBar.style.display  = 'none';
       chatReady = true;
     }
 
     function setChatOffline() {
-      chatDot.style.background   = '#ef4444';
-      chatDot.style.boxShadow    = '0 0 6px #ef4444';
-      chatLabel.textContent      = 'Offline';
-      chatLabel.style.color      = '#ef4444';
-      chatInput.disabled         = true;
-      chatSend.disabled          = true;
-      reconnBar.style.display    = 'block';
+      chatDot.style.background = '#ef4444';
+      chatDot.style.boxShadow  = '0 0 6px #ef4444';
+      chatLabel.textContent    = 'Offline';
+      chatLabel.style.color    = '#fca5a5';
+      chatInput.disabled       = true;
+      chatSend.disabled        = true;
+      reconnBar.style.display  = 'block';
       chatReady = false;
     }
 
-    // Render a single message into the chat box
+    // Render a single message bubble into the chat box
     function appendMsg(sender, text, timestamp, isSystem) {
       const div = document.createElement('div');
       if (isSystem) {
         div.className = 'chat-msg system-msg';
         div.innerHTML = '<div class="bubble">' + escHtml(text) + '</div>';
       } else {
-        const isMine = (sender === MY_USERNAME);
+        const isMine  = (sender === MY_USERNAME);
         div.className = 'chat-msg' + (isMine ? ' mine' : '');
         const initial = sender ? sender.charAt(0).toUpperCase() : '?';
-        const ts = timestamp ? new Date(timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+        const ts = timestamp
+          ? new Date(timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+          : '';
         div.innerHTML =
           '<div class="avatar">' + escHtml(initial) + '</div>' +
           '<div class="bubble">' +
             '<div class="sender">' + escHtml(sender) + '</div>' +
             '<div class="text">'   + escHtml(text)   + '</div>' +
-            '<div class="ts">'     + escHtml(ts)     + '</div>' +
+            '<div class="ts">'     + ts              + '</div>' +
           '</div>';
       }
-      // Remove "Loading..." placeholder if it exists
+      // Remove "Loading..." placeholder on first real message
       const loading = chatBox.querySelector('.system-msg');
       if (loading && loading.querySelector('.bubble') &&
-          loading.querySelector('.bubble').textContent === 'Loading chat history...') {
+          loading.querySelector('.bubble').textContent.trim() === 'Loading chat history...') {
         loading.remove();
       }
       chatBox.appendChild(div);
@@ -484,27 +495,25 @@
                 .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    // ── Poll for new messages ──────────────────────────────────────────────────
+    // Poll DB for new messages every 2 seconds
     function pollMessages() {
       fetch(CTX + '/ChatPollServlet?itemId=' + CURRENT_ITEM_ID + '&since=' + lastMsgId)
-        .then(r => r.json())
-        .then(data => {
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
           if (!chatReady) setChatOnline();
           if (data && data.messages) {
-            data.messages.forEach(m => {
+            data.messages.forEach(function(m) {
               appendMsg(m.sender, m.content, m.sentAt, false);
               if (m.msgId > lastMsgId) lastMsgId = m.msgId;
             });
           }
         })
-        .catch(() => {
-          setChatOffline();
-        });
+        .catch(function() { setChatOffline(); });
     }
 
-    // ── Send a message ─────────────────────────────────────────────────────────
+    // Send message via POST
     function sendChat() {
-      const msg = chatInput.value.trim();
+      var msg = chatInput.value.trim();
       if (!msg || !chatReady) return;
       chatInput.value = '';
 
@@ -513,27 +522,24 @@
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'itemId=' + CURRENT_ITEM_ID + '&content=' + encodeURIComponent(msg)
       })
-      .then(r => r.json())
-      .then(d => {
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
         if (d.ok) {
-          // Message sent — next poll will show it (or show immediately)
           appendMsg(MY_USERNAME, msg, new Date().toISOString(), false);
         }
       })
-      .catch(() => setChatOffline());
+      .catch(function() { setChatOffline(); });
     }
 
-    // Enter key sends message
-    chatInput.addEventListener('keydown', e => {
+    // Enter key to send
+    chatInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') sendChat();
     });
 
-    // Start polling every 2 seconds
-    pollMessages(); // immediate first fetch
+    // Start polling
+    pollMessages();
     pollTimer = setInterval(pollMessages, 2000);
-
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => clearInterval(pollTimer));
+    window.addEventListener('beforeunload', function() { clearInterval(pollTimer); });
   </script>
 
   <script src="${pageContext.request.contextPath}/js/bid-live.js"></script>

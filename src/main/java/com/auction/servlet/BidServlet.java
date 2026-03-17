@@ -6,6 +6,7 @@ import com.auction.dao.WatchlistDAO;
 import com.auction.dao.WinnerDAO;
 import com.auction.model.*;
 import com.auction.security.SecurityUtil;
+import com.auction.network.BidNotificationServer;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
@@ -25,8 +26,8 @@ import java.util.UUID;
  * Attacker fake page se bid nahi lagwa sakta.
  * 2. NumberFormatException Fix: itemId parse try-catch mein hai —
  * URL mein "abc" dene par 500 nahi, redirect hoga Dashboard par.
- * 3. Observer Pattern: BidNotificationServer directly nahi, BidEventPublisher
- * ke through.
+ * 3. Real-time notification: BidNotificationServer.broadcastBidUpdate() se
+ * // sab connected browsers ko instantly new bid ki info milti hai
  * 4. sanitizeInput() applied on user inputs before use.
  *
  * URL: /BidServlet?itemId=5
@@ -35,10 +36,10 @@ import java.util.UUID;
 @WebServlet("/BidServlet")
 public class BidServlet extends HttpServlet {
 
-    private final AuctionItemDAO itemDAO    = new AuctionItemDAO();
-    private final BidDAO         bidDAO     = new BidDAO();
-    private final WinnerDAO      winnerDAO  = new WinnerDAO();
-    private final WatchlistDAO   watchlistDAO = new WatchlistDAO();
+    private final AuctionItemDAO itemDAO = new AuctionItemDAO();
+    private final BidDAO bidDAO = new BidDAO();
+    private final WinnerDAO winnerDAO = new WinnerDAO();
+    private final WatchlistDAO watchlistDAO = new WatchlistDAO();
 
     /**
      * GET Request — Auction item ki detail page dikhao.
@@ -87,9 +88,9 @@ public class BidServlet extends HttpServlet {
         // Formula: currentPrice + 5% ya currentPrice + 1, jo bhi bada ho.
         if (item != null) {
             double currentPrice = item.getCurrentPrice();
-            double fivePercent  = currentPrice * 0.05;
-            double increment    = Math.max(fivePercent, 1.0); // minimum ₹1
-            double minNextBid   = Math.ceil(currentPrice + increment); // round up
+            double fivePercent = currentPrice * 0.05;
+            double increment = Math.max(fivePercent, 1.0); // minimum ₹1
+            double minNextBid = Math.ceil(currentPrice + increment); // round up
             req.setAttribute("minNextBid", minNextBid);
 
             // ── Watchlist Status ─────────────────────────────────────────────
@@ -158,16 +159,14 @@ public class BidServlet extends HttpServlet {
         // 3. INSERT INTO bids + UPDATE auction_items (Transaction)
         Bid bid = new Bid(itemId, loggedUser.getUserId(), bidAmount);
         boolean success = bidDAO.placeBid(bid);
-
         if (success) {
-            // OBSERVER PATTERN FIX: BidEventPublisher ke through notify karo
-            // (Direct BidNotificationServer call bypass hata diya)
+            // Real-time notification — sab connected browsers ko batao
             AuctionItem item = itemDAO.findById(itemId);
-            // BidEventPublisher.getInstance().notifyBid(
-            // itemId,
-            // loggedUser.getUsername(),
-            // bidAmount
-            // );
+            BidNotificationServer.getInstance().broadcastBidUpdate(
+                    itemId,
+                    loggedUser.getUsername(),
+                    bidAmount,
+                    item != null ? item.getTitle() : "");
 
             res.sendRedirect(req.getContextPath() + "/BidServlet?itemId=" + itemId + "&success=1");
         } else {

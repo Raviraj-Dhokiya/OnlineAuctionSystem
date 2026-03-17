@@ -8,6 +8,7 @@
   <title>My Watchlist — AuctionHub</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
   <style>
+    .section-subtitle { color: #666; margin-bottom: 0.5rem; font-size: 0.92rem; }
     .watchlist-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -15,34 +16,36 @@
       margin-top: 1.5rem;
     }
     .watch-card {
-      background: var(--card-bg, #1e293b);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: #fff;
+      border: 1px solid #e8e8f0;
       border-radius: 12px;
       padding: 1.2rem;
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
       transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     .watch-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      box-shadow: 0 6px 20px rgba(108,99,255,0.12);
+      border-color: #c5bfff;
     }
     .watch-card-title {
       font-size: 1.05rem;
-      font-weight: 600;
-      color: #f1f5f9;
+      font-weight: 700;
+      color: #1a1a2e;
       text-decoration: none;
     }
-    .watch-card-title:hover { color: #60a5fa; }
+    .watch-card-title:hover { color: #6c63ff; }
     .watch-price {
       font-size: 1.3rem;
-      font-weight: 700;
-      color: #34d399;
+      font-weight: 800;
+      color: #6c63ff;
     }
     .watch-meta {
       font-size: 0.82rem;
-      color: #94a3b8;
+      color: #666;
     }
     .watch-actions {
       display: flex;
@@ -52,9 +55,10 @@
     .empty-watchlist {
       text-align: center;
       padding: 4rem 2rem;
-      color: #64748b;
+      color: #888;
     }
     .empty-watchlist .emoji { font-size: 3.5rem; display: block; margin-bottom: 1rem; }
+    .watchlist-count { color: #555; margin-bottom: 0.5rem; font-size: 0.9rem; }
   </style>
 </head>
 <body>
@@ -85,7 +89,7 @@
       </div>
     </c:when>
     <c:otherwise>
-      <p style="color:#64748b; margin-bottom:0.5rem;">
+      <p class="watchlist-count">
         Tracking <strong>${watchlist.size()}</strong> item(s).
       </p>
       <div class="watchlist-grid">
