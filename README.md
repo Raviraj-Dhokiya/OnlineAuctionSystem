@@ -163,13 +163,6 @@ java -cp target/OnlineAuctionSystem.war com.auction.rmi.AuctionRMIServer
 | http://localhost:8080/OnlineAuctionSystem/AdminServlet | Admin panel |
 | http://localhost:8080/OnlineAuctionSystem/api/items | REST API |
 
-### Default Credentials
-
-| Role | Username | Password |
-|------|----------|----------|
-| Admin | `admin` | `Admin@123` |
-| Bidder | `john_doe` | `Test@123` |
-
 ---
 
 ## 🔌 REST API Endpoints (Unit 7)
