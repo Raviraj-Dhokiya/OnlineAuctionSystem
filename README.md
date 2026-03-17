@@ -235,26 +235,6 @@ messages       → msg_id, item_id, sender_id, content
 
 Stored Procedure: `determine_winner(item_id)` — called via `CallableStatement`
 
----
-
-## ⚠️ Common Issues & Fixes
-
-**Problem:** `ORA-12505 — SID not recognized`
-**Fix:** Change URL to `jdbc:oracle:thin:@localhost:1521/XEPDB1` for Oracle 21c
-
-**Problem:** `ClassNotFoundException: oracle.jdbc.driver.OracleDriver`
-**Fix:** Run the `mvn install:install-file` command for ojdbc8.jar
-
-**Problem:** `Port 9090 already in use`
-**Fix:** Change `PORT` in `BidNotificationServer.java` to 9093 or any free port
-
-**Problem:** `javax.mail.AuthenticationFailedException`
-**Fix:** Use Gmail App Password, not your regular Gmail password
-
----
-
-*Project by: [Your Name] | Roll No: [Your Roll No] | BE CSE Sem 5*
-
 
 ---
 
@@ -262,10 +242,11 @@ Stored Procedure: `determine_winner(item_id)` — called via `CallableStatement`
 
 ```bat
 :: First time only — kill any existing Java process
-taskkill /F /IM java.exe
+Get-Process -Name java | Stop-Process -Force
+
 
 :: Run the app
 startApp.bat
 ```
 
-Access at: `http://localhost:8080/OnlineAuctionSystem/`
+Access at: `http://localhost:8080`
