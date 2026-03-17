@@ -8,16 +8,17 @@ import java.sql.SQLException;
 /**
  * DBConnection - Connection Pool (Apache DBCP2)
  *
- * SECURITY FIX: DB credentials ab hardcoded nahi hain.
+ * SECURITY NOTE: DB credentials hardcoded nahi hain.
  * - System.getenv("DB_URL") → DB URL environment variable se aata hai
  * - System.getenv("DB_USER") → Username environment variable se aata hai
  * - System.getenv("DB_PASS") → Password environment variable se aata hai
  *
+ * SETUP: env.bat file banao (gitignore mein listed hai, commit mat karo):
+ * set DB_URL=jdbc:oracle:thin:@<host>:<port>/<service>
+ * set DB_USER=<your_db_username>
+ * set DB_PASS=<your_db_password>
  *
- * Ya startApp.bat mein set karo (gitignore mein daalo):
- * set DB_URL=jdbc:oracle:thin:@...
- * set DB_USER=SQL_...
- * set DB_PASS=5M6X...
+ * startApp.bat automatically env.bat load karta hai agar woh present ho.
  *
  * PEHLE KI PROBLEM: Har DAO method mein DriverManager.getConnection() call hota
  * tha.

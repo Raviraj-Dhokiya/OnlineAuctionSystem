@@ -106,12 +106,13 @@ mvn install:install-file \
 
 ### Step 3 — Configure DB Connection
 
-Edit `src/main/java/com/auction/util/DBConnection.java`:
-```java
-private static final String DB_URL  = "jdbc:oracle:thin:@localhost:1521:XE";
-private static final String DB_USER = "auction_user";
-private static final String DB_PASS = "auction_pass";
+Create a file called `env.bat` in the project root (this file is in `.gitignore` — never commit it):
+```bat
+set DB_URL=jdbc:oracle:thin:@localhost:1521:XE
+set DB_USER=auction_user
+set DB_PASS=auction_pass
 ```
+`startApp.bat` automatically loads `env.bat` at startup. The app reads credentials via `System.getenv()` — credentials are never hardcoded in source files.
 
 ### Step 4 — Configure JavaMail (Optional)
 
@@ -255,13 +256,16 @@ Stored Procedure: `determine_winner(item_id)` — called via `CallableStatement`
 *Project by: [Your Name] | Roll No: [Your Roll No] | BE CSE Sem 5*
 
 
-to run project :
+---
 
-# पहले पुराना Tomcat बंद करो (अगर चल रहा हो)
-Get-Process -Name java | Stop-Process -Force
+## 🚀 Quick Run (Windows)
 
-# फिर run करो
-$env:PATH = "$env:USERPROFILE\apache-maven-3.9.6\bin;$env:PATH"
-mvn compile tomcat7:run
+```bat
+:: First time only — kill any existing Java process
+taskkill /F /IM java.exe
 
-http://localhost:8080/
+:: Run the app
+startApp.bat
+```
+
+Access at: `http://localhost:8080/OnlineAuctionSystem/`
