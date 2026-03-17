@@ -1,0 +1,168 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard — Auction System</title>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+</head>
+<body>
+
+<%-- NAVBAR --%>
+<nav class="navbar">
+  <div class="nav-brand">🏆 AuctionHub</div>
+  <div class="nav-links">
+    <span>Welcome, <strong>${sessionScope.username}</strong></span>
+    <a href="${pageContext.request.contextPath}/AuctionItemServlet" class="btn btn-outline btn-sm">+ List Item</a>
+    <a href="${pageContext.request.contextPath}/LogoutServlet"      class="btn btn-ghost btn-sm">Logout</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <%-- SEARCH BAR --%>
+  <div class="search-bar">
+    <form action="${pageContext.request.contextPath}/SearchServlet" method="get">
+      <input type="text" name="q" placeholder="Search auctions...">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+  </div>
+
+  <%-- ACTIVE AUCTIONS GRID --%>
+  <h2 class="section-title">🔥 Live Auctions</h2>
+
+  <div class="auction-grid">
+    <c:choose>
+      <c:when test="${empty activeItems}">
+        <p class="empty-msg">No active auctions right now. Be the first to list one!</p>
+      </c:when>
+      <c:otherwise>
+        <c:forEach var="item" items="${activeItems}">
+          <div class="auction-card">
+            <%-- Item image (BLOB from DB - Unit 4) --%>
+            <c:choose>
+              <c:when test="${not empty item.imageName}">
+                <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=image&itemId=${item.itemId}"
+                     alt="${item.title}" class="item-img">
+              </c:when>
+              <c:otherwise>
+                <div class="item-img-placeholder">📦</div>
+              </c:otherwise>
+            </c:choose>
+
+            <div class="card-body">
+              <span class="category-badge">${item.category}</span>
+              <h3 class="item-title">${item.title}</h3>
+              <p class="item-desc">${item.description}</p>
+
+              <div class="price-row">
+                <span class="current-price">
+                  ₹<fmt:formatNumber value="${item.currentPrice}" pattern="#,##0.00"/>
+                </span>
+                <span class="price-label">Current bid</span>
+              </div>
+
+              <div class="time-row">
+                <span class="ends-label">Ends:</span>
+                <span class="ends-time">
+                  <fmt:formatDate value="${item.endTime}" pattern="dd MMM yyyy HH:mm"/>
+                </span>
+              </div>
+
+              <a href="${pageContext.request.contextPath}/BidServlet?itemId=${item.itemId}"
+                 class="btn btn-primary btn-full">Bid Now</a>
+            </div>
+          </div>
+        </c:forEach>
+      </c:otherwise>
+    </c:choose>
+  </div>
+
+  <%-- MY BID HISTORY --%>
+  <h2 class="section-title">📋 My Bid History</h2>
+
+  <div class="table-wrap">
+    <c:choose>
+      <c:when test="${empty myBids}">
+        <p class="empty-msg">You haven't placed any bids yet.</p>
+      </c:when>
+      <c:otherwise>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>My Bid (₹)</th>
+              <th>Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <c:forEach var="bid" items="${myBids}">
+              <tr>
+                <td><a href="${pageContext.request.contextPath}/BidServlet?itemId=${bid.itemId}">${bid.itemTitle}</a></td>
+                <td><fmt:formatNumber value="${bid.bidAmount}" pattern="#,##0.00"/></td>
+                <td><fmt:formatDate value="${bid.bidTime}" pattern="dd MMM HH:mm"/></td>
+                <td>
+                  <c:choose>
+                    <c:when test="${bid.winning}">
+                      <span class="badge badge-success">Winning</span>
+                    </c:when>
+                    <c:otherwise>
+                      <span class="badge badge-neutral">Placed</span>
+                    </c:otherwise>
+                  </c:choose>
+                </td>
+              </tr>
+            </c:forEach>
+          </tbody>
+        </table>
+      </c:otherwise>
+    </c:choose>
+  </div>
+
+  <%-- MY WINS --%>
+  <h2 class="section-title">🏆 Auctions I Won</h2>
+  <div class="table-wrap">
+    <c:choose>
+      <c:when test="${empty myWins}">
+        <p class="empty-msg">No wins yet. Keep bidding!</p>
+      </c:when>
+      <c:otherwise>
+        <table class="data-table">
+          <thead>
+            <tr><th>Item</th><th>Winning Bid (₹)</th><th>Payment</th><th>Date</th></tr>
+          </thead>
+          <tbody>
+            <c:forEach var="win" items="${myWins}">
+              <tr>
+                <td>${win.itemTitle}</td>
+                <td><fmt:formatNumber value="${win.winningAmount}" pattern="#,##0.00"/></td>
+                <td>
+                  <c:choose>
+                    <c:when test="${win.paymentStatus == 'PAID'}">
+                      <span class="badge badge-success">Paid</span>
+                    </c:when>
+                    <c:otherwise>
+                      <span class="badge badge-warn">Pending</span>
+                    </c:otherwise>
+                  </c:choose>
+                </td>
+                <td><fmt:formatDate value="${win.awardedAt}" pattern="dd MMM yyyy"/></td>
+              </tr>
+            </c:forEach>
+          </tbody>
+        </table>
+      </c:otherwise>
+    </c:choose>
+  </div>
+
+</div><%-- .container --%>
+
+<%-- Live Bid notification via Socket (Unit 3) --%>
+<div id="notif-bar" class="notif-bar" style="display:none;"></div>
+
+<script src="${pageContext.request.contextPath}/js/bid-live.js"></script>
+</body>
+</html>

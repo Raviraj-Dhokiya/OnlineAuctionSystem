@@ -1,0 +1,23 @@
+# ─── NEVER commit these files ───────────────────────────────
+# Environment / secrets files
+.env
+*.env
+env.bat
+env.ps1
+local.properties
+secrets.properties
+
+# Build output
+target/
+
+# IDE files
+.vscode/settings.json
+.idea/
+*.iml
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# OS files
+.DS_Store
+Thumbs.db
