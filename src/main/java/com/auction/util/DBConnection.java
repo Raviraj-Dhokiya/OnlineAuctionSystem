@@ -9,21 +9,18 @@ import java.sql.SQLException;
  * DBConnection - Connection Pool (Apache DBCP2)
  *
  * SECURITY FIX: DB credentials ab hardcoded nahi hain.
- *   - System.getenv("DB_URL")  → DB URL environment variable se aata hai
- *   - System.getenv("DB_USER") → Username environment variable se aata hai
- *   - System.getenv("DB_PASS") → Password environment variable se aata hai
+ * - System.getenv("DB_URL") → DB URL environment variable se aata hai
+ * - System.getenv("DB_USER") → Username environment variable se aata hai
+ * - System.getenv("DB_PASS") → Password environment variable se aata hai
  *
- * SETUP (Windows PowerShell mein set karo):
- *   $env:DB_URL  = "jdbc:oracle:thin:@db.freesql.com:1521/23ai_mb9q7"
- *   $env:DB_USER = "SQL_GK7J15ZKICWJ950BENH2Z7VGE5"
- *   $env:DB_PASS = "5M6XMJgA5L1IHOJD!AUTXA7QD38582"
  *
  * Ya startApp.bat mein set karo (gitignore mein daalo):
- *   set DB_URL=jdbc:oracle:thin:@...
- *   set DB_USER=SQL_...
- *   set DB_PASS=5M6X...
+ * set DB_URL=jdbc:oracle:thin:@...
+ * set DB_USER=SQL_...
+ * set DB_PASS=5M6X...
  *
- * PEHLE KI PROBLEM: Har DAO method mein DriverManager.getConnection() call hota tha.
+ * PEHLE KI PROBLEM: Har DAO method mein DriverManager.getConnection() call hota
+ * tha.
  * Oracle remote server par network connection banana 1-3 second leta tha.
  *
  * SOLUTION (Connection Pool):
@@ -35,7 +32,7 @@ import java.sql.SQLException;
 public class DBConnection {
 
     // ── Credentials environment variables se aate hain (NEVER hardcode!) ──────
-    private static final String DB_URL  = System.getenv("DB_URL");
+    private static final String DB_URL = System.getenv("DB_URL");
     private static final String DB_USER = System.getenv("DB_USER");
     private static final String DB_PASS = System.getenv("DB_PASS");
     // ─────────────────────────────────────────────────────────────────────────
@@ -46,8 +43,8 @@ public class DBConnection {
     static {
         if (DB_URL == null || DB_USER == null || DB_PASS == null) {
             throw new ExceptionInInitializerError(
-                "[DBConnection] FATAL: DB_URL, DB_USER, DB_PASS environment variables not set! " +
-                "Set them before starting the application.");
+                    "[DBConnection] FATAL: DB_URL, DB_USER, DB_PASS environment variables not set! " +
+                            "Set them before starting the application.");
         }
 
         dataSource = new BasicDataSource();
@@ -59,16 +56,16 @@ public class DBConnection {
         dataSource.setPassword(DB_PASS);
 
         // --- Pool Size Settings ---
-        dataSource.setInitialSize(3);        // Startup par 3 connections ready rakho
-        dataSource.setMaxTotal(10);          // Ek saath max 10 connections
-        dataSource.setMinIdle(2);            // Kam se kam 2 idle connections hamesha ready
-        dataSource.setMaxIdle(5);            // Max 5 idle connections pool mein rakho
-        dataSource.setMaxWaitMillis(5000);   // 5 sec se zyada wait karna ho toh error
+        dataSource.setInitialSize(3); // Startup par 3 connections ready rakho
+        dataSource.setMaxTotal(10); // Ek saath max 10 connections
+        dataSource.setMinIdle(2); // Kam se kam 2 idle connections hamesha ready
+        dataSource.setMaxIdle(5); // Max 5 idle connections pool mein rakho
+        dataSource.setMaxWaitMillis(5000); // 5 sec se zyada wait karna ho toh error
 
         // --- Connection Health Check ---
-        dataSource.setValidationQuery("SELECT 1 FROM DUAL");   // Oracle ke liye health check query
-        dataSource.setTestOnBorrow(true);      // Pool se lene se pehle connection check karo
-        dataSource.setTestWhileIdle(true);     // Idle connections ka bhi test karo
+        dataSource.setValidationQuery("SELECT 1 FROM DUAL"); // Oracle ke liye health check query
+        dataSource.setTestOnBorrow(true); // Pool se lene se pehle connection check karo
+        dataSource.setTestWhileIdle(true); // Idle connections ka bhi test karo
         dataSource.setTimeBetweenEvictionRunsMillis(30000); // Har 30 sec mein stale connections hatao
 
         // --- Connection Timeout ---
@@ -104,9 +101,9 @@ public class DBConnection {
      */
     public static void printPoolStats() {
         System.out.println("[DBConnection Pool Stats]" +
-            " Active=" + dataSource.getNumActive() +
-            " Idle=" + dataSource.getNumIdle() +
-            " MaxTotal=" + dataSource.getMaxTotal());
+                " Active=" + dataSource.getNumActive() +
+                " Idle=" + dataSource.getNumIdle() +
+                " MaxTotal=" + dataSource.getMaxTotal());
     }
 
     /**
@@ -128,7 +125,7 @@ public class DBConnection {
     public static boolean testConnection() {
         try (Connection conn = getConnection()) {
             System.out.println("[DBConnection] Pool connection test: OK | DB=" +
-                conn.getMetaData().getDatabaseProductName());
+                    conn.getMetaData().getDatabaseProductName());
             return true;
         } catch (SQLException e) {
             System.err.println("[DBConnection] Pool connection test FAILED: " + e.getMessage());
