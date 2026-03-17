@@ -53,14 +53,15 @@ public class BidDAO {
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false); // BEGIN TRANSACTION
 
-            // RACE CONDITION FIX: FOR UPDATE → row lock ho jata hai.
-            // end_time > CURRENT_TIMESTAMP → expired auction mein bid nahi hogi (60-sec window fix).
-            // Doosra concurrent transaction wait karega jab tak pehla commit/rollback na kare.
-            String checkSql = "SELECT current_price FROM auction_items " +
+            // ── RACE CONDITION FIX + END_TIME FETCH ─────────────────────────────
+            // FOR UPDATE → row lock (concurrent bids safe)
+            // end_time bhi fetch karte hain taaki time extension check kar sakein
+            String checkSql = "SELECT current_price, end_time FROM auction_items " +
                               "WHERE item_id=? AND status='ACTIVE' AND end_time > CURRENT_TIMESTAMP " +
                               "FOR UPDATE";
 
-            // FIX: try-with-resources → checkPs aur rs automatically close honge (no leaks)
+            Timestamp currentEndTime = null;
+
             try (PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
                 checkPs.setInt(1, bid.getItemId());
 
@@ -75,10 +76,13 @@ public class BidDAO {
                         conn.rollback();
                         return false; // bid too low
                     }
+
+                    // End time save karo — time extension ke liye check karenge
+                    currentEndTime = rs.getTimestamp("end_time");
                 }
             }
 
-            // FIX: try-with-resources → insertPs automatically close hoga
+            // INSERT bid
             String insertSql = "INSERT INTO bids (item_id, bidder_id, bid_amount) VALUES (?,?,?)";
             try (PreparedStatement insertPs = conn.prepareStatement(insertSql)) {
                 insertPs.setInt(1, bid.getItemId());
@@ -87,7 +91,7 @@ public class BidDAO {
                 insertPs.executeUpdate();
             }
 
-            // FIX: try-with-resources → updatePs automatically close hoga
+            // UPDATE current price
             String updateSql = "UPDATE auction_items SET current_price=? WHERE item_id=?";
             try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
                 updatePs.setDouble(1, bid.getBidAmount());
@@ -95,7 +99,31 @@ public class BidDAO {
                 updatePs.executeUpdate();
             }
 
-            conn.commit(); // COMMIT
+            // ── AUCTION TIME EXTENSION (Real Auction Feature) ────────────────────
+            // Agar auction ke end_time se abhi sirf 2 minute (120 sec) bache hain,
+            // toh end_time ko 5 minutes (300 sec) aur badha do.
+            // Yeh "sniping" rokta hai — last second mein bid karke win karna.
+            if (currentEndTime != null) {
+                long now          = System.currentTimeMillis();
+                long endMillis    = currentEndTime.getTime();
+                long remainingMs  = endMillis - now;
+
+                if (remainingMs > 0 && remainingMs <= 2 * 60 * 1000) {
+                    // 2 minutes ya kam bacha hai → 5 minutes extend karo
+                    Timestamp newEndTime = new Timestamp(endMillis + 5 * 60 * 1000);
+                    String extendSql =
+                        "UPDATE auction_items SET end_time=? WHERE item_id=?";
+                    try (PreparedStatement extPs = conn.prepareStatement(extendSql)) {
+                        extPs.setTimestamp(1, newEndTime);
+                        extPs.setInt(2, bid.getItemId());
+                        extPs.executeUpdate();
+                        System.out.println("[BidDAO] Auction #" + bid.getItemId() +
+                            " extended by 5 minutes (last 2-min bid rule).");
+                    }
+                }
+            }
+
+            conn.commit(); // COMMIT — bid + price update + optional extension ek saath
             return true;
 
         } catch (SQLException e) {

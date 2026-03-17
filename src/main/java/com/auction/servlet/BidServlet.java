@@ -2,6 +2,7 @@ package com.auction.servlet;
 
 import com.auction.dao.AuctionItemDAO;
 import com.auction.dao.BidDAO;
+import com.auction.dao.WatchlistDAO;
 import com.auction.dao.WinnerDAO;
 import com.auction.model.*;
 import com.auction.security.SecurityUtil;
@@ -34,9 +35,10 @@ import java.util.UUID;
 @WebServlet("/BidServlet")
 public class BidServlet extends HttpServlet {
 
-    private final AuctionItemDAO itemDAO = new AuctionItemDAO();
-    private final BidDAO bidDAO = new BidDAO();
-    private final WinnerDAO winnerDAO = new WinnerDAO();
+    private final AuctionItemDAO itemDAO    = new AuctionItemDAO();
+    private final BidDAO         bidDAO     = new BidDAO();
+    private final WinnerDAO      winnerDAO  = new WinnerDAO();
+    private final WatchlistDAO   watchlistDAO = new WatchlistDAO();
 
     /**
      * GET Request — Auction item ki detail page dikhao.
@@ -79,6 +81,25 @@ public class BidServlet extends HttpServlet {
         req.setAttribute("bids", bids);
         req.setAttribute("winner", winner);
         req.setAttribute("bidCount", bids.size());
+
+        // ── Minimum Bid Suggestion ───────────────────────────────────────────
+        // Real auction systems mein "minimum next bid" suggest karte hain.
+        // Formula: currentPrice + 5% ya currentPrice + 1, jo bhi bada ho.
+        if (item != null) {
+            double currentPrice = item.getCurrentPrice();
+            double fivePercent  = currentPrice * 0.05;
+            double increment    = Math.max(fivePercent, 1.0); // minimum ₹1
+            double minNextBid   = Math.ceil(currentPrice + increment); // round up
+            req.setAttribute("minNextBid", minNextBid);
+
+            // ── Watchlist Status ─────────────────────────────────────────────
+            // Check karo user ne yeh item watch kiya hua hai?
+            User loggedUser = (User) session.getAttribute("loggedUser");
+            if (loggedUser != null) {
+                boolean watching = watchlistDAO.isWatching(loggedUser.getUserId(), itemId);
+                req.setAttribute("isWatching", watching);
+            }
+        }
 
         req.getRequestDispatcher("/WEB-INF/views/item-detail.jsp").forward(req, res);
     }

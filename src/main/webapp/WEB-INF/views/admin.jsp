@@ -57,7 +57,7 @@
   <div id="tab-auctions" class="tab-content" style="display:none;">
     <h3 class="section-title">All Auction Items</h3>
     <table class="data-table">
-      <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Current (₹)</th><th>Status</th><th>Ends</th><th>Action</th></tr></thead>
+      <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Current (₹)</th><th>Status</th><th>Ends</th><th>Action</th><th>Export</th></tr></thead>
       <tbody>
         <c:forEach var="item" items="${allItems}">
           <tr>
@@ -80,11 +80,19 @@
                    onclick="return confirm('Close this auction now?')">Close</a>
               </c:if>
             </td>
+            <%-- CSV Export: Kisi bhi auction ki bid history download karo --%>
+            <td>
+              <a href="${pageContext.request.contextPath}/AdminServlet?action=exportBidsCsv&itemId=${item.itemId}"
+                 class="btn btn-sm btn-ghost"
+                 title="Download bid history as CSV"
+                 style="font-size:0.78rem;">📥 CSV</a>
+            </td>
           </tr>
         </c:forEach>
       </tbody>
     </table>
   </div>
+
 
   <%-- Winners Table --%>
   <div id="tab-winners" class="tab-content" style="display:none;">
