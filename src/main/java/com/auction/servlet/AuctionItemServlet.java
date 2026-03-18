@@ -62,6 +62,28 @@ public class AuctionItemServlet extends HttpServlet {
 
         String action = req.getParameter("action");
 
+        if ("specificImage".equals(action)) {
+            // Serve an auxiliary image directly from Local File System
+            try {
+                int itemId = Integer.parseInt(req.getParameter("itemId"));
+                int imgId = Integer.parseInt(req.getParameter("imgId"));
+                String uploadPath = System.getProperty("user.home") + java.io.File.separator + "auction_uploads";
+                java.io.File file = new java.io.File(uploadPath, "item_" + itemId + "_" + imgId + ".jpg");
+                
+                if (file.exists()) {
+                    byte[] imgData = java.nio.file.Files.readAllBytes(file.toPath());
+                    res.setContentType("image/jpeg");
+                    res.setContentLength(imgData.length);
+                    res.getOutputStream().write(imgData);
+                } else {
+                    res.sendError(HttpServletResponse.SC_NOT_FOUND);
+                }
+            } catch (Exception e) {
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            }
+            return;
+        }
+
         if ("image".equals(action)) {
             // ── Image serve karo (BLOB retrieval) ────────────────────────────
             // FIX: NumberFormatException — itemId parse try-catch mein
@@ -123,6 +145,10 @@ public class AuctionItemServlet extends HttpServlet {
             // Form ke sab fields parse karo (text + file dono)
             List<FileItem> fileItems = upload.parseRequest(req);
 
+            java.util.List<byte[]> extraImageData = new java.util.ArrayList<>();
+            java.util.List<String> extraImageNames = new java.util.ArrayList<>();
+            boolean isFirstImage = true;
+
             for (FileItem fi : fileItems) {
 
                 if (fi.isFormField()) {
@@ -154,30 +180,38 @@ public class AuctionItemServlet extends HttpServlet {
                     // ── File field → Image Upload (BLOB) ─────────────────────
                     if (!fi.getName().isEmpty() && fi.getSize() > 0) {
 
-                        // FIX: File size check — max 2 MB
                         if (fi.getSize() > 2L * 1024 * 1024) {
-                            req.setAttribute("error", "Image too large. Maximum allowed size is 2 MB.");
+                            req.setAttribute("error", "One of the images is too large. Max 2 MB per photo.");
                             req.getRequestDispatcher("/WEB-INF/views/add-item.jsp").forward(req, res);
                             return;
                         }
 
-                        // FIX: File type check — only images allowed
                         String contentType = fi.getContentType();
                         if (contentType == null || !contentType.startsWith("image/")) {
-                            req.setAttribute("error", "Invalid file type. Please upload an image file (jpg, png, gif, etc.).");
+                            req.setAttribute("error", "Invalid file type. Please upload only image files.");
                             req.getRequestDispatcher("/WEB-INF/views/add-item.jsp").forward(req, res);
                             return;
                         }
 
                         InputStream is = fi.getInputStream();
                         byte[] imageBytes = is.readAllBytes();
-                        item.setImageData(imageBytes);
-                        item.setImageName(SecurityUtil.sanitizeInput(fi.getName()));
+                        String sanitizedName = SecurityUtil.sanitizeInput(fi.getName());
+
+                        if (isFirstImage) {
+                            item.setImageData(imageBytes);
+                            item.setImageName(sanitizedName);
+                            isFirstImage = false;
+                        } else {
+                            if (extraImageData.size() < 4) { // max 4 extra (total 5)
+                                extraImageData.add(imageBytes);
+                                extraImageNames.add(sanitizedName);
+                            }
+                        }
                     }
                 }
             }
 
-            // Start time = abhi (jis moment item list ki ja rahi hai)
+            // Start time = abhi
             item.setStartTime(new Timestamp(System.currentTimeMillis()));
 
             // ── DB mein INSERT karo ───────────────────────────────────────────
@@ -185,6 +219,18 @@ public class AuctionItemServlet extends HttpServlet {
             int newItemId = itemDAO.addItem(item);
 
             if (newItemId > 0) {
+                // Save additional images to LOCAL SYSTEM FOLDER (Bypassing Oracle Quota Issue)
+                if (!extraImageData.isEmpty()) {
+                    String uploadPath = System.getProperty("user.home") + java.io.File.separator + "auction_uploads";
+                    java.io.File uploadDir = new java.io.File(uploadPath);
+                    if (!uploadDir.exists()) uploadDir.mkdirs(); // create if missing
+                    
+                    for (int i = 0; i < extraImageData.size(); i++) {
+                        java.io.File file = new java.io.File(uploadPath, "item_" + newItemId + "_" + (i + 1) + ".jpg");
+                        java.nio.file.Files.write(file.toPath(), extraImageData.get(i));
+                    }
+                }
+
                 // Success → naye item ki detail page par redirect karo
                 res.sendRedirect(req.getContextPath() +
                     "/BidServlet?itemId=" + newItemId + "&success=listed");

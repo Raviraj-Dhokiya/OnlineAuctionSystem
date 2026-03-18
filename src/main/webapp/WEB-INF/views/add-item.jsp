@@ -66,9 +66,20 @@
       </div>
     </div>
     <div class="form-group">
-      <label>Item Image <small>(JPG/PNG, max 5MB)</small></label>
-      <input type="file" name="itemImage" accept="image/*">
+      <label>Item Images <small>(JPG/PNG, max 5 photos, max 2MB each)</small></label>
+      <input type="file" name="itemImage" accept="image/*" multiple id="imageInput">
+      <small style="color:#666; display:block; margin-top:5px;">Pehli photo cover image banegi. Slider ke liye up to 5 chunein.</small>
     </div>
+
+    <!-- JS Limit enforcement -->
+    <script>
+      document.getElementById('imageInput').addEventListener('change', function(e) {
+        if (this.files.length > 5) {
+          alert('Aap maximum 5 photos hi upload kar sakte hain!');
+          this.value = ''; // clears the selection
+        }
+      });
+    </script>
 
     <button type="submit" class="btn btn-primary btn-full">List Item for Auction</button>
   </form>

@@ -252,12 +252,28 @@
         <c:choose>
           <c:when test="${not empty item.imageName}">
             <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=image&itemId=${item.itemId}"
-                 alt="${item.title}" class="item-detail-img">
+                 alt="${item.title}" class="item-detail-img" id="mainImage">
           </c:when>
           <c:otherwise>
             <div class="item-detail-img-placeholder">📦</div>
           </c:otherwise>
         </c:choose>
+
+        <%-- MULTI-IMAGE GALLERY (Added) --%>
+        <c:if test="${not empty extraImages or not empty item.imageName}">
+          <div class="item-gallery" style="display:flex; gap:10px; margin-top:15px; margin-bottom:20px; overflow-x:auto;">
+            <!-- Thumbnail of main cover image -->
+            <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=image&itemId=${item.itemId}"
+                 style="height:70px; width:70px; border-radius:8px; object-fit:cover; border:2px solid #ddd; cursor:pointer;"
+                 onclick="document.getElementById('mainImage').src=this.src;">
+            <!-- Extra 4 Thumbnails -->
+            <c:forEach var="imgId" items="${extraImages}">
+              <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=specificImage&itemId=${item.itemId}&imgId=${imgId}"
+                   style="height:70px; width:70px; border-radius:8px; object-fit:cover; border:2px solid #ddd; cursor:pointer;"
+                   onclick="document.getElementById('mainImage').src=this.src;">
+            </c:forEach>
+          </div>
+        </c:if>
 
         <div class="item-meta">
           <span class="category-badge">${item.category}</span>
@@ -362,7 +378,11 @@
         </c:choose>
 
         <%-- Bid History table --%>
-        <h3 class="mt-20">Bid History</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; margin-bottom:10px;">
+          <h3 style="margin:0;">Bid History</h3>
+          <a href="${pageContext.request.contextPath}/DownloadBidsPdfServlet?itemId=${item.itemId}" 
+             class="btn btn-outline btn-sm">📄 Download PDF</a>
+        </div>
         <c:choose>
           <c:when test="${empty bids}">
             <p class="empty-msg">No bids yet. Be the first!</p>

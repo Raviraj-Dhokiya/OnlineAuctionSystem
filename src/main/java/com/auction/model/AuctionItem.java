@@ -45,6 +45,7 @@ public class AuctionItem implements Serializable {
     private Timestamp startTime;       // DB: start_time (kab shuru hogi)
     private Timestamp endTime;         // DB: end_time (kab band hogi)
     private Timestamp createdAt;       // DB: created_at (kab list ki gayi)
+    private int       bidCount;        // Transient: bids count (DB column nahi, query se fill hota hai)
 
     // Khaali constructor: DAO jab DB se data fill karta hai tab use hota hai
     public AuctionItem() {}
@@ -96,6 +97,9 @@ public class AuctionItem implements Serializable {
 
     public Timestamp getCreatedAt()                 { return createdAt; }
     public void      setCreatedAt(Timestamp t)      { this.createdAt = t; }
+
+    public int       getBidCount()                  { return bidCount; }
+    public void      setBidCount(int c)             { this.bidCount = c; }
 
     // ── Helper Methods ────────────────────────────────────────────────────────
 

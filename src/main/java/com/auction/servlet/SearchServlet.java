@@ -7,6 +7,7 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * ════════════════════════════════════════════════════════
@@ -36,27 +37,55 @@ public class SearchServlet extends HttpServlet {
 
     /**
      * GET Request — Search results dikhao.
-     * URL: /SearchServlet?q=searchKeyword
+     * URL: /SearchServlet?q=searchKeyword&category=Art&minPrice=100...
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        // URL se search query nikalo (q = query)
-        // sanitizeInput() → user agar HTML code likhe toh usse safe banao
-        String query = SecurityUtil.sanitizeInput(req.getParameter("q"));
+        // 1. Inputs read and sanitize
+        String query    = SecurityUtil.sanitizeInput(req.getParameter("q"));
+        String category = SecurityUtil.sanitizeInput(req.getParameter("category"));
+        String minPStr  = SecurityUtil.sanitizeInput(req.getParameter("minPrice"));
+        String maxPStr  = SecurityUtil.sanitizeInput(req.getParameter("maxPrice"));
+        String sortBy   = SecurityUtil.sanitizeInput(req.getParameter("sortBy"));
 
-        // Khaali search → Dashboard par wapas bhejo
-        if (query == null || query.trim().isEmpty()) {
-            res.sendRedirect(req.getContextPath() + "/DashboardServlet");
-            return;
+        // If no query and no category filters exist, it's an empty search
+        if ((query == null || query.trim().isEmpty()) && 
+            (category == null || category.trim().isEmpty() || category.equals("ALL"))) {
+            // Optional: You could redirect, but let's allow "show all" with filters
+            query = ""; // Treat blank as 'match all' for keyword
         }
 
-        // DB mein search karo — case-insensitive (UPPER() function use hota hai)
-        req.setAttribute("searchResults", itemDAO.searchItems(query.trim()));
-        req.setAttribute("searchQuery",   query); // JSP mein "Results for: guitar" dikhane ke liye
+        // Parse prices
+        double minPrice = 0;
+        double maxPrice = 0;
+        try { if (minPStr != null && !minPStr.isEmpty()) minPrice = Double.parseDouble(minPStr); } catch(Exception ignored){}
+        try { if (maxPStr != null && !maxPStr.isEmpty()) maxPrice = Double.parseDouble(maxPStr); } catch(Exception ignored){}
 
-        // search-results.jsp forward karo
+        // 2. Fetch data from DB using new filtered method
+        List<com.auction.model.AuctionItem> results = itemDAO.searchItemsFiltered(
+            query, category, minPrice, maxPrice, sortBy
+        );
+
+        // Fetch bid count for each result card
+        com.auction.dao.BidDAO bidDAO = new com.auction.dao.BidDAO();
+        for (com.auction.model.AuctionItem item : results) {
+            item.setBidCount(bidDAO.getBidCount(item.getItemId()));
+        }
+
+        // 3. Set attributes for the JSP
+        req.setAttribute("searchResults", results);
+        req.setAttribute("searchQuery",   query);
+        req.setAttribute("searchCategory",category);
+        req.setAttribute("searchMinPrice",minPStr);
+        req.setAttribute("searchMaxPrice",maxPStr);
+        req.setAttribute("searchSortBy",  sortBy);
+        
+        // Load distinct categories for the dropdown filter
+        req.setAttribute("categories",  itemDAO.getActiveCategories());
+
+        // 4. Forward to search-results.jsp
         req.getRequestDispatcher("/WEB-INF/views/search-results.jsp").forward(req, res);
     }
 }

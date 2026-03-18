@@ -15,6 +15,8 @@
   <div class="nav-brand">🏆 AuctionHub</div>
   <div class="nav-links">
     <span>Welcome, <strong>${sessionScope.username}</strong></span>
+    <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-ghost btn-sm">Home</a>
+    <a href="${pageContext.request.contextPath}/ProfileServlet"   class="btn btn-outline btn-sm">👤 Profile</a>
     <a href="${pageContext.request.contextPath}/AuctionItemServlet" class="btn btn-outline btn-sm">+ List Item</a>
     <a href="${pageContext.request.contextPath}/LogoutServlet"      class="btn btn-ghost btn-sm">Logout</a>
   </div>
@@ -52,8 +54,11 @@
               </c:otherwise>
             </c:choose>
 
-            <div class="card-body">
+            <div class="card-body" style="position: relative;">
               <span class="category-badge">${item.category}</span>
+              <span class="bid-count-badge" style="position:absolute; top:16px; right:16px; background:#f0f2f5; color:#666; font-size:0.75rem; padding:4px 8px; border-radius:12px; font-weight:600;">
+                🔥 ${item.bidCount} Bids
+              </span>
               <h3 class="item-title">${item.title}</h3>
               <p class="item-desc">${item.description}</p>
 

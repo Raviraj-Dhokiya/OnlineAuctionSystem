@@ -25,6 +25,78 @@ import java.util.List;
  */
 public class AuctionItemDAO {
 
+    // ── Table Auto-Initialization for Multiple Photos ──────────────────────────
+    public AuctionItemDAO() {
+        String setupSql = 
+            "BEGIN " +
+            "  EXECUTE IMMEDIATE 'CREATE TABLE item_images (" +
+            "      image_id NUMBER PRIMARY KEY, " +
+            "      item_id NUMBER REFERENCES auction_items(item_id) ON DELETE CASCADE, " +
+            "      image_data BLOB, " +
+            "      image_name VARCHAR2(255)" +
+            "  )'; " +
+            "EXCEPTION " +
+            "  WHEN OTHERS THEN " +
+            "    IF SQLCODE != -955 THEN RAISE; END IF; " + 
+            "END;";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(setupSql)) {
+            ps.execute();
+        } catch (SQLException e) {
+            System.err.println("[AuctionItemDAO] Table creation ignored or failed: " + e.getMessage());
+        }
+    }
+
+    public void addAdditionalImages(int itemId, List<byte[]> imageDataList, List<String> imageNames) {
+        if (imageDataList == null || imageDataList.isEmpty()) return;
+        
+        // Oracle 11g compatible auto-increment simulation
+        String sql = "INSERT INTO item_images (image_id, item_id, image_data, image_name) " +
+                     "VALUES ((SELECT COALESCE(MAX(image_id), 0) + ? FROM item_images), ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (int i = 0; i < imageDataList.size(); i++) {
+                ps.setInt(1, i + 1); // 1, 2, 3.. increments added to base max ID
+                ps.setInt(2, itemId);
+                ps.setBytes(3, imageDataList.get(i));
+                ps.setString(4, imageNames.get(i));
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        } catch (SQLException e) {
+            System.err.println("[AuctionItemDAO] addAdditionalImages error: " + e.getMessage());
+        }
+    }
+
+    public List<Integer> getAdditionalImageIds(int itemId) {
+        List<Integer> ids = new ArrayList<>();
+        String sql = "SELECT image_id FROM item_images WHERE item_id = ? ORDER BY image_id ASC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, itemId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) ids.add(rs.getInt("image_id"));
+            }
+        } catch (SQLException e) {
+            System.err.println("[AuctionItemDAO] getAdditionalImageIds error: " + e.getMessage());
+        }
+        return ids;
+    }
+
+    public byte[] getSpecificImage(int imageId) {
+        String sql = "SELECT image_data FROM item_images WHERE image_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, imageId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getBytes("image_data");
+            }
+        } catch (SQLException e) {
+            System.err.println("[AuctionItemDAO] getSpecificImage error: " + e.getMessage());
+        }
+        return null;
+    }
+
     // ── CREATE ───────────────────────────────────────────────────────────────
 
     /**
@@ -200,6 +272,99 @@ public class AuctionItemDAO {
             System.err.println("[AuctionItemDAO] searchItems error: " + e.getMessage());
         }
         return items;
+    }
+
+    /**
+     * searchItemsFiltered() — Advanced search with filters.
+     *
+     * @param keyword   title/description mein search (null = sab)
+     * @param category  specific category filter (null = sab categories)
+     * @param minPrice  minimum current price (0 = no limit)
+     * @param maxPrice  maximum current price (0 = no limit)
+     * @param sortBy    "price_asc", "price_desc", "ending_soon", "newest" (null = ending_soon)
+     */
+    public List<AuctionItem> searchItemsFiltered(String keyword, String category,
+                                                  double minPrice, double maxPrice,
+                                                  String sortBy) {
+        List<AuctionItem> items = new ArrayList<>();
+
+        // Dynamic WHERE clause build karo
+        StringBuilder sql = new StringBuilder(
+            "SELECT i.item_id, i.title, i.description, i.category, " +
+            "i.starting_price, i.current_price, i.reserve_price, " +
+            "i.image_name, i.seller_id, i.status, i.start_time, i.end_time, " +
+            "i.created_at, u.username AS seller_name " +
+            "FROM auction_items i JOIN users u ON i.seller_id = u.user_id " +
+            "WHERE i.status='ACTIVE' AND i.end_time > CURRENT_TIMESTAMP"
+        );
+
+        // Keyword filter
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (UPPER(i.title) LIKE UPPER(?) OR UPPER(i.description) LIKE UPPER(?))");
+        }
+        // Category filter
+        if (category != null && !category.trim().isEmpty() && !category.equals("ALL")) {
+            sql.append(" AND UPPER(i.category) = UPPER(?)");
+        }
+        // Price range filter
+        if (minPrice > 0) sql.append(" AND i.current_price >= ?");
+        if (maxPrice > 0) sql.append(" AND i.current_price <= ?");
+
+        // Sort order
+        switch (sortBy != null ? sortBy : "ending_soon") {
+            case "price_asc":   sql.append(" ORDER BY i.current_price ASC");  break;
+            case "price_desc":  sql.append(" ORDER BY i.current_price DESC"); break;
+            case "newest":      sql.append(" ORDER BY i.created_at DESC");    break;
+            default:            sql.append(" ORDER BY i.end_time ASC");       break; // ending_soon
+        }
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int idx = 1;
+            String like = keyword != null ? "%" + keyword.trim() + "%" : null;
+
+            if (like != null) { ps.setString(idx++, like); ps.setString(idx++, like); }
+            if (category != null && !category.trim().isEmpty() && !category.equals("ALL")) {
+                ps.setString(idx++, category.trim());
+            }
+            if (minPrice > 0) ps.setDouble(idx++, minPrice);
+            if (maxPrice > 0) ps.setDouble(idx++, maxPrice);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) items.add(mapItem(rs, false));
+            }
+        } catch (SQLException e) {
+            System.err.println("[AuctionItemDAO] searchItemsFiltered error: " + e.getMessage());
+        }
+        return items;
+    }
+
+    /**
+     * Get distinct categories from active auction items (for filter dropdown)
+     * UPDATE: Ab user ko hamesha saari default categories dikhegi dropdown me
+     */
+    public List<String> getActiveCategories() {
+        return java.util.Arrays.asList(
+            "Electronics", "Vehicles", "Art", "Furniture", "Collectibles", "Music", "Other"
+        );
+    }
+
+    /**
+     * Get bid count for an item (for displaying on auction cards)
+     */
+    public int getBidCount(int itemId) {
+        String sql = "SELECT COUNT(*) FROM bids WHERE item_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, itemId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("[AuctionItemDAO] getBidCount error: " + e.getMessage());
+        }
+        return 0;
     }
 
     /**

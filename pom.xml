@@ -117,6 +117,13 @@
       <version>0.4</version>
     </dependency>
 
+    <!-- iText PDF for exporting Bids (User Requested) -->
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>itextpdf</artifactId>
+      <version>5.5.13.3</version>
+    </dependency>
+
     <!-- Log4j for logging -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>

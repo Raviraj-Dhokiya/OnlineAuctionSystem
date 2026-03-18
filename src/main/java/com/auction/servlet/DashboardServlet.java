@@ -50,26 +50,25 @@ public class DashboardServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Session se logged user nikalo
-        // (AuthFilter ne pehle hi guarantee ki hai ki session exist karta hai)
         HttpSession session = req.getSession(false);
         User user = (User) session.getAttribute("loggedUser");
 
-        // ── DB se Data Fetch karo ─────────────────────────────────────────────
+        // 1. Saari ACTIVE auctions
+        List<com.auction.model.AuctionItem> activeItems = itemDAO.getActiveItems();
 
-        // 1. Saari ACTIVE auctions (status='ACTIVE' AND end_time > now)
-        //    dashboard.jsp mein "Available Auctions" section mein dikhegi
-        req.setAttribute("activeItems", itemDAO.getActiveItems());
+        // 2. Har item ka bid count set karo (cards pe dikhane ke liye)
+        for (com.auction.model.AuctionItem item : activeItems) {
+            item.setBidCount(bidDAO.getBidCount(item.getItemId()));
+        }
 
-        // 2. Is user ki apni sari bids (bidder_id = loggedUser.userId)
-        //    dashboard.jsp mein "My Bids" section
+        req.setAttribute("activeItems", activeItems);
+
+        // 3. Is user ki apni sari bids
         req.setAttribute("myBids", bidDAO.getBidsByUser(user.getUserId()));
 
-        // 3. Is user ne jo auctions jeeti hain
-        //    dashboard.jsp mein "My Wins" section
+        // 4. Is user ne jo auctions jeeti hain
         req.setAttribute("myWins", winnerDAO.getWinsByUser(user.getUserId()));
 
-        // ── View par forward karo (RequestDispatcher) ─────────────────────────
-        // req mein set data JSP ke mein ${activeItems}, ${myBids} se access hoga
         req.getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(req, res);
     }
 }

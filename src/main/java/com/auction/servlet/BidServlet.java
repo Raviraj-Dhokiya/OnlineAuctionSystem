@@ -78,10 +78,21 @@ public class BidServlet extends HttpServlet {
         List<Bid> bids = bidDAO.getBidsForItem(itemId);
         Winner winner = winnerDAO.getWinnerByItem(itemId);
 
+        // Fetch additional gallery images IDs from LOCAL FOLDER (not Oracle DB)
+        List<Integer> extraImages = new java.util.ArrayList<>();
+        String uploadPath = System.getProperty("user.home") + java.io.File.separator + "auction_uploads";
+        for (int i = 1; i <= 4; i++) {
+            java.io.File file = new java.io.File(uploadPath, "item_" + itemId + "_" + i + ".jpg");
+            if (file.exists()) {
+                extraImages.add(i);
+            }
+        }
+
         req.setAttribute("item", item);
         req.setAttribute("bids", bids);
         req.setAttribute("winner", winner);
         req.setAttribute("bidCount", bids.size());
+        req.setAttribute("extraImages", extraImages);
 
         // ── Minimum Bid Suggestion ───────────────────────────────────────────
         // Real auction systems mein "minimum next bid" suggest karte hain.
