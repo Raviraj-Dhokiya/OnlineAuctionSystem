@@ -1021,21 +1021,25 @@
             String.fromCharCode(8377) + Number(data.amount).toLocaleString('en-IN'),
             'success'
           );
-          // Re-check status in case target was reached and server deactivated it
-          setTimeout(function() {
-            fetch(AB_CTX + '/AutoBidServlet?itemId=' + AB_ITEM_ID)
-              .then(function(r) { return r.json(); })
-              .then(function(st) {
-                if (!st.active) {
-                  showAutoBidInactive();
-                  showAutoBidToast(
-                    '\uD83D\uDED1 Auto Bid stopped — target price reached!', 'info');
-                } else {
-                  abMaxTarget = st.maxTarget;
-                }
-              }).catch(function() {});
-          }, 2000);
         }
+        
+        // ALWAYS Re-check status from server.
+        // Kyunki agar AutoBidProcessorServlet me bid price Target se zyada chali gayi, 
+        // toh server use wahin deactivate kar dega aur 'triggered' false bhejega.
+        setTimeout(function() {
+          fetch(AB_CTX + '/AutoBidServlet?itemId=' + AB_ITEM_ID)
+            .then(function(r) { return r.json(); })
+            .then(function(st) {
+              if (abActive && !st.active) {
+                // Pehle active tha, ab server ne band kar diya
+                showAutoBidInactive();
+                showAutoBidToast(
+                  '\u26A0\uFE0F Auto Bid stopped: Bid amount exceeded your target price!', 'error');
+              } else if (st.active) {
+                abMaxTarget = st.maxTarget;
+              }
+            }).catch(function() {});
+        }, 1500); // Thoda ruk ke verify karo
       })
       .catch(function() {
         abProcessing = false;
