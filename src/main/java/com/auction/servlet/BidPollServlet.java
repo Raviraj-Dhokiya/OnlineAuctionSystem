@@ -63,28 +63,27 @@ public class BidPollServlet extends HttpServlet {
 
         // URL parameters nikalo
         String itemIdStr = req.getParameter("itemId");
-        String sinceStr  = req.getParameter("since");  // timestamp milliseconds mein
+        String lastBidIdStr = req.getParameter("lastBidId"); // Time sync bug fix: now using bidId instead of timestamp
 
-        // since parse karo — agar nahi mila toh 0 (sab bids bhej do)
-        long since = 0;
-        try { since = Long.parseLong(sinceStr); } catch (Exception ignored) {}
+        long lastBidId = 0;
+        try { lastBidId = Long.parseLong(lastBidIdStr); } catch (Exception ignored) {}
 
         List<Object> result = new ArrayList<>();
 
         if (itemIdStr != null) {
             int    itemId = Integer.parseInt(itemIdStr);
-            final long sinceMs = since;
+            final long filterId = lastBidId;
 
             // DB se us item ke sab bids lao
             List<Bid> bids = bidDAO.getBidsForItem(itemId);
 
-            // Sirf naye bids bhejo — jo "since" timestamp ke baad aaye hain
+            // Sirf naye bids bhejo — jo "lastBidId" ke baad aaye hain
             bids.stream()
-                .filter(b -> b.getBidTime() != null &&
-                             b.getBidTime().getTime() > sinceMs)  // sirf nayi bids
+                .filter(b -> b.getBidId() > filterId)  // ID is reliable, time sync is not
                 .forEach(b -> {
                     // Har bid ko Map (key-value) format mein convert karo
                     java.util.Map<String, Object> map = new java.util.LinkedHashMap<>();
+                    map.put("bidId", b.getBidId()); // Send bidId to client
                     map.put("itemId", b.getItemId());
                     map.put("bidder", b.getBidderName()); // kisne lagai
                     map.put("amount", b.getBidAmount());  // kitna

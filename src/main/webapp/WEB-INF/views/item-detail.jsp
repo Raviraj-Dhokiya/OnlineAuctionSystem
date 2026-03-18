@@ -214,6 +214,216 @@
       margin-top: 0.8rem;
       line-height: 1.5;
     }
+
+    /* ══════════════════════════════════════════════════════════════
+       AUTO BID STYLES
+    ══════════════════════════════════════════════════════════════ */
+    .auto-bid-section {
+      margin-top: 1rem;
+      border-top: 1.5px dashed #d0c9ff;
+      padding-top: 1rem;
+    }
+    /* Active status banner */
+    .auto-bid-status-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, #f0eeff 0%, #e8e4ff 100%);
+      border: 1.5px solid #b4a9ff;
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      margin-bottom: 0.8rem;
+      font-size: 0.85rem;
+      color: #3b2fc9;
+      font-weight: 600;
+      animation: auto-bid-pulse 2.5s infinite;
+    }
+    @keyframes auto-bid-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(108,99,255,0.25); }
+      50%      { box-shadow: 0 0 0 6px rgba(108,99,255,0); }
+    }
+    .auto-bid-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #6c63ff;
+      animation: pulse-dot 1.5s infinite;
+      flex-shrink: 0;
+    }
+    /* Buttons */
+    .btn-auto-bid-enable {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      background: linear-gradient(135deg, #6c63ff 0%, #8b5cf6 100%);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(108,99,255,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+      width: 100%;
+      justify-content: center;
+    }
+    .btn-auto-bid-enable:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(108,99,255,0.45);
+    }
+    .btn-auto-bid-cancel {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid #f87171;
+      background: #fff5f5;
+      color: #c0392b;
+      transition: all 0.2s;
+      margin-top: 0.4rem;
+      width: 100%;
+      justify-content: center;
+    }
+    .btn-auto-bid-cancel:hover { background: #fee2e2; }
+    /* Modal overlay */
+    .auto-bid-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10,10,30,0.55);
+      backdrop-filter: blur(4px);
+      z-index: 9000;
+      align-items: center;
+      justify-content: center;
+    }
+    .auto-bid-overlay.open { display: flex; }
+    .auto-bid-modal {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      padding: 2rem;
+      width: 100%;
+      max-width: 420px;
+      animation: modal-in 0.25s ease;
+    }
+    @keyframes modal-in {
+      from { opacity:0; transform: scale(0.9) translateY(20px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
+    .auto-bid-modal h3 {
+      margin: 0 0 0.3rem 0;
+      font-size: 1.2rem;
+      color: #1a1a2e;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .auto-bid-modal .modal-sub {
+      font-size: 0.82rem;
+      color: #64748b;
+      margin-bottom: 1.2rem;
+    }
+    .auto-bid-modal .info-row {
+      background: #f0eeff;
+      border: 1px solid #c5bfff;
+      border-radius: 8px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.84rem;
+      color: #3b2fc9;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    .auto-bid-modal label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.3rem;
+    }
+    .auto-bid-modal input[type=number] {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: #1a1a2e;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .auto-bid-modal input[type=number]:focus { border-color: #6c63ff; }
+    .modal-footer {
+      display: flex;
+      gap: 0.7rem;
+      margin-top: 1.2rem;
+    }
+    .modal-footer .btn-confirm {
+      flex: 1;
+      padding: 0.65rem;
+      border-radius: 9px;
+      border: none;
+      background: linear-gradient(135deg,#6c63ff,#8b5cf6);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .modal-footer .btn-confirm:hover { opacity:0.88; }
+    .modal-footer .btn-close-modal {
+      padding: 0.65rem 1.1rem;
+      border-radius: 9px;
+      border: 1.5px solid #d1d5db;
+      background: #f9fafb;
+      color: #4b5563;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .modal-footer .btn-close-modal:hover { background: #e5e7eb; }
+    /* Timer countdown badge */
+    .auto-bid-timer {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      background: #fff7ed;
+      border: 1.5px solid #fdba74;
+      border-radius: 8px;
+      padding: 0.5rem 0.8rem;
+      font-size: 0.83rem;
+      color: #92400e;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+    .auto-bid-timer.visible { display: flex; }
+    .auto-bid-toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #1a1a2e;
+      color: #fff;
+      padding: 0.8rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s, transform 0.3s;
+      max-width: 320px;
+    }
+    .auto-bid-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .auto-bid-toast.success { border-left: 4px solid #22c55e; }
+    .auto-bid-toast.error   { border-left: 4px solid #ef4444; }
+    .auto-bid-toast.info    { border-left: 4px solid #6c63ff; }
   </style>
 </head>
 
@@ -361,6 +571,34 @@
                 </div>
                 <button type="submit" class="btn btn-primary btn-full">Place Bid 🔨</button>
               </form>
+
+              <%-- ═══════════════════════ AUTO BID SECTION ═══════════════════════ --%>
+              <div class="auto-bid-section" id="auto-bid-section">
+
+                <%-- Active Status Bar (hidden by default, JS se dikhega) --%>
+                <div class="auto-bid-status-bar" id="auto-bid-status-bar" style="display:none;">
+                  <div class="auto-bid-dot"></div>
+                  🤖 Auto Bid Active &mdash; Target: <span id="ab-target-display">&#8377;0</span>
+                </div>
+
+                <%-- Countdown timer (30 sec) --%>
+                <div class="auto-bid-timer" id="auto-bid-timer">
+                  ⏳ Auto bid in <strong><span id="ab-countdown">30</span>s</strong>...
+                </div>
+
+                <%-- Enable Button --%>
+                <button class="btn-auto-bid-enable" id="btn-enable-auto-bid"
+                        onclick="openAutoBidModal()" style="display:inline-flex;">
+                  🤖 Enable Auto Bid
+                </button>
+
+                <%-- Cancel Button --%>
+                <button class="btn-auto-bid-cancel" id="btn-cancel-auto-bid"
+                        style="display:none;" onclick="cancelAutoBid()">
+                  ✕ Disable Auto Bid
+                </button>
+
+              </div><%-- /auto-bid-section --%>
             </div>
           </c:when>
           <c:when test="${not empty winner}">
@@ -433,6 +671,42 @@
   </div>
 
   <div id="notif-bar" class="notif-bar" style="display:none;"></div>
+
+  <%-- ══════════════════════════════════════════════════════════
+       AUTO BID MODAL
+  ══════════════════════════════════════════════════════════ --%>
+  <div class="auto-bid-overlay" id="auto-bid-overlay" onclick="overlayClickClose(event)">
+    <div class="auto-bid-modal">
+      <h3>🤖 Auto Bid Setup</h3>
+      <p class="modal-sub">Auto bid fires automatically 30 seconds after someone else outbids you.</p>
+
+      <div class="info-row">
+        📌 <strong>How it works:</strong><br>
+        &bull; Auto bid triggers <strong>30 seconds</strong> after another user's bid<br>
+        &bull; Bid amount = Current Price + <strong>10%</strong><br>
+        &bull; If auto bid amount exceeds your target, auto bid <strong>stops</strong> automatically
+      </div>
+
+      <div id="ab-current-info" style="font-size:0.85rem; color:#374151; margin-bottom:0.8rem;">
+        Current Highest Bid: <strong id="ab-modal-current-price">&#8377;0</strong>
+      </div>
+
+      <label for="ab-max-target-input">🎯 Maximum Target Price (&#8377;)</label>
+      <input type="number" id="ab-max-target-input"
+             placeholder="e.g. 10000" min="1" step="1">
+      <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.3rem;">
+        Auto bid will stop once this price limit is reached.
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-confirm" onclick="confirmAutoBid()">&#10003; Activate Auto Bid</button>
+        <button class="btn-close-modal" onclick="closeAutoBidModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <%-- Auto Bid Toast Notification --%>
+  <div class="auto-bid-toast" id="auto-bid-toast"></div>
 
   <script>
     // --- Item & User Context ---
@@ -557,8 +831,242 @@
     window.addEventListener('beforeunload', function() { clearInterval(pollTimer); });
   </script>
 
+  <%-- itemId global — required by bid-live.js for poll filtering + auto bid hook --%>
+  <script>
+    var itemId = parseInt('${item.itemId}', 10);
+  </script>
+
   <script src="${pageContext.request.contextPath}/js/bid-live.js"></script>
 
+  <script>
+    // ── AUTO BID JAVASCRIPT ───────────────────────────────────────────────────
+
+    var AB_ITEM_ID   = parseInt('${item.itemId}', 10);
+    var AB_CTX       = '${pageContext.request.contextPath}';
+    var AB_MY_USER   = '${sessionScope.username}';
+
+    var abActive         = false;
+    var abMaxTarget      = 0;
+    var abCountdownTimer = null;
+    var abCountdownSec   = 30;
+    var abLastBidder     = '';
+    var abProcessing     = false;
+    var abToastTimer     = null;
+
+    // ── On page load: check if auto bid is already active ────────────────────
+    window.addEventListener('load', function() {
+      fetch(AB_CTX + '/AutoBidServlet?itemId=' + AB_ITEM_ID)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.active) {
+            abActive    = true;
+            abMaxTarget = data.maxTarget;
+            showAutoBidActive();
+          }
+        })
+        .catch(function() {});
+    });
+
+
+    // ── Show auto bid ACTIVE state ────────────────────────────────────────────
+    function showAutoBidActive() {
+      document.getElementById('auto-bid-status-bar').style.display = 'flex';
+      document.getElementById('ab-target-display').textContent =
+        String.fromCharCode(8377) + Number(abMaxTarget).toLocaleString('en-IN');
+      document.getElementById('btn-enable-auto-bid').style.display = 'none';
+      document.getElementById('btn-cancel-auto-bid').style.display = 'inline-flex';
+    }
+
+    // ── Show auto bid INACTIVE state ──────────────────────────────────────────
+    function showAutoBidInactive() {
+      abActive = false;
+      document.getElementById('auto-bid-status-bar').style.display = 'none';
+      document.getElementById('btn-enable-auto-bid').style.display = 'inline-flex';
+      document.getElementById('btn-cancel-auto-bid').style.display = 'none';
+      stopAutoBidCountdown();
+    }
+
+    // ── MODAL: open ───────────────────────────────────────────────────────────
+    function openAutoBidModal() {
+      var priceEl   = document.getElementById('current-price');
+      var priceText = priceEl ? priceEl.textContent.trim() : String.fromCharCode(8377) + '0';
+      document.getElementById('ab-modal-current-price').textContent = priceText;
+      document.getElementById('auto-bid-overlay').classList.add('open');
+      setTimeout(function() {
+        document.getElementById('ab-max-target-input').focus();
+      }, 200);
+    }
+
+    // ── MODAL: close ──────────────────────────────────────────────────────────
+    function closeAutoBidModal() {
+      document.getElementById('auto-bid-overlay').classList.remove('open');
+      document.getElementById('ab-max-target-input').value = '';
+    }
+
+    function overlayClickClose(e) {
+      if (e.target === document.getElementById('auto-bid-overlay')) {
+        closeAutoBidModal();
+      }
+    }
+
+    // ── CONFIRM: Enable Auto Bid ──────────────────────────────────────────────
+    function confirmAutoBid() {
+      var inp       = document.getElementById('ab-max-target-input');
+      var targetVal = parseFloat(inp.value);
+
+      if (!targetVal || isNaN(targetVal) || targetVal <= 0) {
+        showAutoBidToast('Please enter a valid target price.', 'error');
+        inp.focus();
+        return;
+      }
+
+      // Disable button while saving
+      var btn = document.querySelector('.btn-confirm');
+      if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+
+      fetch(AB_CTX + '/AutoBidServlet', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:    'action=enable&itemId=' + AB_ITEM_ID + '&maxTarget=' + targetVal
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (btn) { btn.disabled = false; btn.textContent = '\u2713 Activate Auto Bid'; }
+        closeAutoBidModal();
+        if (data.ok) {
+          abActive    = true;
+          abMaxTarget = targetVal;
+          showAutoBidActive();
+          showAutoBidToast('\u2705 Auto Bid activated! Target: ' +
+            String.fromCharCode(8377) + Number(targetVal).toLocaleString('en-IN'), 'success');
+        } else {
+          showAutoBidToast('\u274c ' + (data.msg || 'Could not activate. Try again.'), 'error');
+        }
+      })
+      .catch(function() {
+        if (btn) { btn.disabled = false; btn.textContent = '\u2713 Activate Auto Bid'; }
+        closeAutoBidModal();
+        showAutoBidToast('\u274c Network error. Please try again.', 'error');
+      });
+    }
+
+    // ── CANCEL Auto Bid ───────────────────────────────────────────────────────
+    function cancelAutoBid() {
+      fetch(AB_CTX + '/AutoBidServlet', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:    'action=cancel&itemId=' + AB_ITEM_ID
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        showAutoBidInactive();
+        showAutoBidToast('\uD83D\uDED1 Auto Bid disabled successfully.', 'info');
+      })
+      .catch(function() {
+        showAutoBidToast('\u274c Network error. Please try again.', 'error');
+      });
+    }
+
+    // ── 30-Second Countdown ───────────────────────────────────────────────────
+    function startAutoBidCountdown(bidderName) {
+      if (!abActive)                  return; // auto bid is off
+      if (bidderName === AB_MY_USER)  return; // I placed the bid, skip
+      if (abProcessing)               return; // already counting
+
+      abProcessing   = true;
+      abCountdownSec = 30;
+      abLastBidder   = bidderName;
+
+      var timerEl = document.getElementById('auto-bid-timer');
+      var countEl = document.getElementById('ab-countdown');
+      timerEl.classList.add('visible');
+      countEl.textContent = abCountdownSec;
+
+      abCountdownTimer = setInterval(function() {
+        abCountdownSec--;
+        countEl.textContent = abCountdownSec;
+        if (abCountdownSec <= 0) {
+          stopAutoBidCountdown();
+          timerEl.classList.remove('visible');
+          triggerAutoBid();
+        }
+      }, 1000);
+    }
+
+    function stopAutoBidCountdown() {
+      clearInterval(abCountdownTimer);
+      abCountdownTimer = null;
+      abProcessing     = false;
+      var timerEl = document.getElementById('auto-bid-timer');
+      if (timerEl) timerEl.classList.remove('visible');
+    }
+
+    // ── TRIGGER Auto Bid on server ────────────────────────────────────────────
+    function triggerAutoBid() {
+      if (!abActive) return;
+
+      showAutoBidToast('\uD83E\uDD16 Placing auto bid...', 'info');
+
+      fetch(AB_CTX + '/AutoBidProcessorServlet', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:    'itemId=' + AB_ITEM_ID + '&lastBidder=' + encodeURIComponent(abLastBidder)
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        abProcessing = false; // allow next countdown
+        if (data.triggered) {
+          showAutoBidToast(
+            '\u2705 Auto bid placed by ' + data.bidder + ': ' +
+            String.fromCharCode(8377) + Number(data.amount).toLocaleString('en-IN'),
+            'success'
+          );
+          // Re-check status in case target was reached and server deactivated it
+          setTimeout(function() {
+            fetch(AB_CTX + '/AutoBidServlet?itemId=' + AB_ITEM_ID)
+              .then(function(r) { return r.json(); })
+              .then(function(st) {
+                if (!st.active) {
+                  showAutoBidInactive();
+                  showAutoBidToast(
+                    '\uD83D\uDED1 Auto Bid stopped — target price reached!', 'info');
+                } else {
+                  abMaxTarget = st.maxTarget;
+                }
+              }).catch(function() {});
+          }, 2000);
+        }
+      })
+      .catch(function() {
+        abProcessing = false;
+        showAutoBidToast('\u274c Auto bid error. Please try again.', 'error');
+      });
+    }
+
+    // ── Hook: called by bid-live.js when a new bid is detected ───────────────
+    window.onNewBidDetected = function(bidderName, amount) {
+      if (abActive && bidderName !== AB_MY_USER) {
+        startAutoBidCountdown(bidderName);
+      }
+    };
+
+    // ── Toast ─────────────────────────────────────────────────────────────────
+    function showAutoBidToast(msg, type) {
+      var toast = document.getElementById('auto-bid-toast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.className   = 'auto-bid-toast ' + (type || 'info') + ' show';
+      clearTimeout(abToastTimer);
+      abToastTimer = setTimeout(function() {
+        toast.classList.remove('show');
+      }, 4500);
+    }
+
+    // ── ESC closes modal ──────────────────────────────────────────────────────
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeAutoBidModal();
+    });
+  </script>
 
 </body>
 </html>

@@ -83,6 +83,20 @@ CREATE TABLE messages (
     CONSTRAINT fk_msg_sender FOREIGN KEY (sender_id) REFERENCES users(user_id)
 );
 
+-- 7. AUTO BIDS TABLE (For Auto-Bid Feature)
+-- Ek user ek item ke liye sirf ek auto bid set kar sakta hai (UNIQUE constraint)
+CREATE TABLE auto_bids (
+    auto_bid_id  NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    item_id      NUMBER        NOT NULL,
+    user_id      NUMBER        NOT NULL,
+    max_target   NUMBER(12,2)  NOT NULL,     -- Is price tak auto bid chalegi
+    is_active    NUMBER(1)     DEFAULT 1,    -- 1=active, 0=band
+    created_at   TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_ab_item   FOREIGN KEY (item_id) REFERENCES auction_items(item_id),
+    CONSTRAINT fk_ab_user   FOREIGN KEY (user_id) REFERENCES users(user_id),
+    CONSTRAINT uq_auto_bid  UNIQUE(item_id, user_id)  -- Ek user ek item pe sirf ek auto bid
+);
+
 -- ============================================================
 -- INDEXES for performance
 -- ============================================================
