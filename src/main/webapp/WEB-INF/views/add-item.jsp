@@ -47,6 +47,14 @@
           <option>Furniture</option>
           <option>Collectibles</option>
           <option>Music</option>
+          <option>Fashion & Accessories</option>
+          <option>Real Estate</option>
+          <option>Home Appliances</option>
+          <option>Sports & Outdoors</option>
+          <option>Toys & Hobbies</option>
+          <option>Jewelry & Watches</option>
+          <option>Antiques</option>
+          <option>Books & Comics</option>
           <option>Other</option>
         </select>
       </div>

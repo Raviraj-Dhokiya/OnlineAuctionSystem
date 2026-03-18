@@ -346,7 +346,9 @@ public class AuctionItemDAO {
      */
     public List<String> getActiveCategories() {
         return java.util.Arrays.asList(
-            "Electronics", "Vehicles", "Art", "Furniture", "Collectibles", "Music", "Other"
+            "Electronics", "Vehicles", "Art", "Furniture", "Collectibles", "Music", 
+            "Fashion & Accessories", "Real Estate", "Home Appliances", "Sports & Outdoors", 
+            "Toys & Hobbies", "Jewelry & Watches", "Antiques", "Books & Comics", "Other"
         );
     }
 

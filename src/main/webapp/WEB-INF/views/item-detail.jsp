@@ -310,7 +310,7 @@
             </div>
             <div class="price-box">
               <span class="label">Total Bids</span>
-              <span class="value">${bidCount}</span>
+              <span class="value" id="total-bids">${bidCount}</span>
             </div>
           </div>
 
@@ -383,31 +383,26 @@
           <a href="${pageContext.request.contextPath}/DownloadBidsPdfServlet?itemId=${item.itemId}" 
              class="btn btn-outline btn-sm">📄 Download PDF</a>
         </div>
-        <c:choose>
-          <c:when test="${empty bids}">
-            <p class="empty-msg">No bids yet. Be the first!</p>
-          </c:when>
-          <c:otherwise>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Bidder</th>
-                  <th>Amount (₹)</th>
-                  <th>Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                <c:forEach var="bid" items="${bids}">
-                  <tr class="${bid.winning ? 'row-highlight' : ''}">
-                    <td>${bid.bidderName} <c:if test="${bid.winning}">👑</c:if></td>
-                    <td><fmt:formatNumber value="${bid.bidAmount}" pattern="#,##0.00"/></td>
-                    <td><fmt:formatDate value="${bid.bidTime}" pattern="dd MMM HH:mm:ss"/></td>
-                  </tr>
-                </c:forEach>
-              </tbody>
-            </table>
-          </c:otherwise>
-        </c:choose>
+        <p class="empty-msg" id="empty-bids-msg" style="${empty bids ? 'display:block;' : 'display:none;'}">No bids yet. Be the first!</p>
+        
+        <table class="data-table" id="bid-table" style="${empty bids ? 'display:none;' : ''}">
+          <thead>
+            <tr>
+              <th>Bidder</th>
+              <th>Amount (₹)</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="bid-history-body">
+            <c:forEach var="bid" items="${bids}">
+              <tr class="${bid.winning ? 'row-highlight' : ''}">
+                <td>${bid.bidderName} <c:if test="${bid.winning}">👑</c:if></td>
+                <td><fmt:formatNumber value="${bid.bidAmount}" pattern="#,##0.00"/></td>
+                <td><fmt:formatDate value="${bid.bidTime}" pattern="dd MMM HH:mm:ss"/></td>
+              </tr>
+            </c:forEach>
+          </tbody>
+        </table>
 
         <%-- ═══════════════════════════════════════════════════════
              LIVE CHAT (Socket-based — AuctionChatServer port 9092)

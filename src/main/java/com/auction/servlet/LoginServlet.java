@@ -63,16 +63,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // "Remember Me" cookie check karo — pehle se saved username milega
-        Cookie[] cookies = req.getCookies();
-        if (cookies != null) {
-            for (Cookie c : cookies) {
-                if ("rememberedUsername".equals(c.getName())) {
-                    // Cookie mili → JSP ko username bhejo taaki auto-fill ho
-                    req.setAttribute("rememberedUsername", c.getValue());
-                }
-            }
-        }
+
 
         // Login page dikhao (login.jsp)
         req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, res);
@@ -90,7 +81,6 @@ public class LoginServlet extends HttpServlet {
         // sanitizeInput() → HTML tags hata do (XSS attack prevention)
         String username   = SecurityUtil.sanitizeInput(req.getParameter("username"));
         String password   = req.getParameter("password");   // password sanitize mat karo (special chars hote hain)
-        String rememberMe = req.getParameter("rememberMe"); // checkbox → "on" ya null
 
         // ── Step 1: Input validation ──────────────────────────────────────────
         if (username == null || username.isEmpty() ||
@@ -109,7 +99,6 @@ public class LoginServlet extends HttpServlet {
         // BCrypt.checkpw(): typed password ko stored hash se compare karta hai
         if (user == null || !SecurityUtil.verifyPassword(password, user.getPassword())) {
             req.setAttribute("error", "Invalid username or password.");
-            req.setAttribute("rememberedUsername", username);  // form mein username rakhne ke liye
             req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, res);
             return;
         }
@@ -131,23 +120,7 @@ public class LoginServlet extends HttpServlet {
         session.setAttribute("role",       user.getRole()); // "ADMIN" ya "BIDDER"
         session.setMaxInactiveInterval(30 * 60);             // 30 minutes idle ke baad session khatam
 
-        // ── Step 6: Remember Me Cookie ───────────────────────────────────────
-        if ("on".equals(rememberMe)) {
-            // User ne "Remember Me" check kiya → 7 din ka cookie save karo
-            Cookie remCookie = new Cookie("rememberedUsername", username);
-            remCookie.setMaxAge(7 * 24 * 60 * 60); // seconds mein: 7 din
-            remCookie.setPath(req.getContextPath());
-            remCookie.setHttpOnly(true);            // JavaScript se access nahi hoga (security)
-            res.addCookie(remCookie);
-        } else {
-            // "Remember Me" nahi check kiya → purana cookie delete karo
-            Cookie clearCookie = new Cookie("rememberedUsername", "");
-            clearCookie.setMaxAge(0); // 0 = turant delete
-            clearCookie.setPath(req.getContextPath());
-            res.addCookie(clearCookie);
-        }
-
-        // ── Step 7: Role ke hisaab se redirect karo ──────────────────────────
+        // ── Step 6: Role ke hisaab se redirect karo ──────────────────────────
         if (user.isAdmin()) {
             res.sendRedirect(req.getContextPath() + "/AdminServlet");  // Admin panel
         } else {

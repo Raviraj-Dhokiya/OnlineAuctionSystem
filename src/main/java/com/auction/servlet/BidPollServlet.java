@@ -89,6 +89,12 @@ public class BidPollServlet extends HttpServlet {
                     map.put("bidder", b.getBidderName()); // kisne lagai
                     map.put("amount", b.getBidAmount());  // kitna
                     map.put("item",   "Item #" + b.getItemId());
+                    
+                    // Format the date for the table
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMM HH:mm:ss");
+                    String formattedTime = sdf.format(b.getBidTime());
+                    map.put("bidTimeStr", formattedTime);
+                    
                     result.add(map);
                 });
         }

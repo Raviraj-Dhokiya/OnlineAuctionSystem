@@ -28,18 +28,12 @@
       <div class="form-group">
         <label for="username">Username</label>
         <input type="text" id="username" name="username"
-               value="${rememberedUsername}"
                placeholder="Enter your username" required>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" name="password"
                placeholder="Enter your password" required>
-      </div>
-      <div class="form-group checkbox-row">
-        <label>
-          <input type="checkbox" name="rememberMe"> Remember me
-        </label>
       </div>
       <button type="submit" class="btn btn-primary btn-full">Login</button>
     </form>
