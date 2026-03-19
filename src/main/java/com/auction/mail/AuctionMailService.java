@@ -11,7 +11,7 @@ import java.util.Properties;
  *
  * YEH CLASS KYA KARTI HAI?
  *   - Logon ke pass JavaMail (Unit 7) APIs use karke real email bhejti hai.
- *   - Examples: Winner notification, OTP verification, Outbid alert.
+ *   - Examples: Winner notification, Outbid alert.
  *
  * KAISE CHALTA HAI?
  *   - Gmail ka SMTP server use hota hai ("smtp.gmail.com").
@@ -67,22 +67,7 @@ public class AuctionMailService {
         sendEmail(toEmail, subject, body);
     }
 
-    /**
-     * Send OTP for registration verification (Unit 7 - Sending mail)
-     */
-    public static void sendOTPEmail(String toEmail, String username, String otp) {
-        String subject = "Your Auction System OTP: " + otp;
-        String body = String.format(
-            "<html><body>" +
-            "<h3>Hello %s,</h3>" +
-            "<p>Your One-Time Password (OTP) for registration is:</p>" +
-            "<h2 style='color:#2e86ab;'>%s</h2>" +
-            "<p>This OTP expires in 10 minutes. Do not share it with anyone.</p>" +
-            "</body></html>",
-            username, otp
-        );
-        sendEmail(toEmail, subject, body);
-    }
+
 
     /**
      * Send "outbid" notification - Unit 7 (Forwarding/Replying concept)

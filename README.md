@@ -5,7 +5,8 @@
 
 <br />
 
-Welcome to the **Online Auction System**, a comprehensive web application built to demonstrate advanced concepts in Java programming. This project follows an n-tier architecture and incorporates features such as real-time bidding, user authentication, live socket servers, REST APIs, and database management.
+Welcome to the **Online Auction System**, a comprehensive web application built to demonstrate advanced concepts in Java programming. This project follows an n-tier architecture and incorporates features such as real-time bidding, simple authentication (direct registration/login), fully functional mock payment portals, live socket servers, REST APIs, and database management.
+
 
 ---
 
@@ -68,7 +69,7 @@ This project strictly follows the Advanced Java Technologies curriculum, featuri
 * **Unit 5: Java RMI (Remote Method Invocation)**
   * **`AuctionRMIServer` & `AuctionRMIClient`:** Registered services over an RMI Registry (`port 1099`) defining stubs and skeletons for remote independent interactions and console-based bidding.
 * **Unit 6: Java Servlets & JSP**
-  * Used `HttpServlet` API to serve pages and endpoints. Utilized sessions and cookies for authentication tracking, configured `web.xml` deployment descriptors, implemented Filters, and served dynamic JSP views avoiding CGI bottlenecks.
+  * Used `HttpServlet` API to serve pages and endpoints (e.g., `PaymentServlet` for end-to-end mock payment workflows). Utilized sessions and cookies for authentication tracking, configured `web.xml` deployment descriptors, implemented Filters, and served dynamic JSP views avoiding CGI bottlenecks.
 * **Unit 7: Web Services, REST APIs, & Java Mail**
   * **`AuctionRestAPI.java`:** Exposed clean REST APIs returning real-time JSON for checking item catalogs, prices, and past winners. Used Java Mail APIs (`AuctionMailService.java`) for email notifications.
 * **Unit 8: Design Patterns & Frameworks**

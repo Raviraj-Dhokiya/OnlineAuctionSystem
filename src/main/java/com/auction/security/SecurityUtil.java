@@ -117,14 +117,5 @@ public class SecurityUtil {
         return email != null && email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$");
     }
 
-    /**
-     * 6 digit random OTP generate karo (email verification ke liye).
-     * Range: 100000 — 999999
-     *
-     * USE: Password reset / email verification features mein.
-     */
-    public static String generateOTP() {
-        int otp = (int)(Math.random() * 900000) + 100000;
-        return String.valueOf(otp);
-    }
+
 }

@@ -151,6 +151,7 @@
                     </c:when>
                     <c:otherwise>
                       <span class="badge badge-warn">Pending</span>
+                      <a href="${pageContext.request.contextPath}/PaymentServlet?winnerId=${win.winnerId}&amount=${win.winningAmount}&title=${win.itemTitle}" class="btn btn-primary btn-sm" style="margin-left:10px;">Pay Now</a>
                     </c:otherwise>
                   </c:choose>
                 </td>
