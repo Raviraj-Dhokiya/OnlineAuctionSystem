@@ -1,245 +1,142 @@
-# 🏆 Online Auction Management System
+<div align="center">
+  <h1>🏆 Online Auction System</h1>
+  <p><strong>Advanced Java Technologies — Academic Project</strong></p>
+</div>
 
-**Academic Project — BE Computer Science (Advanced Java Technologies)**
-Maharaja Sayajirao University of Baroda — SS BE III
+<br />
+
+Welcome to the **Online Auction System**, a comprehensive web application built to demonstrate advanced concepts in Java programming. This project follows an n-tier architecture and incorporates features such as real-time bidding, user authentication, live socket servers, REST APIs, and database management.
 
 ---
 
-## 📚 Syllabus Coverage
+## 🛠️ Technologies Used
 
-| Unit | Topic | Where Used |
-|------|-------|-----------|
-| Unit 1 | Introduction — Application Programming | Architecture (n-tier: Client → Servlet → DAO → DB) |
-| Unit 2 | Java I/O | `AuctionLogger.java` — File streams, RandomAccessFile, CSV export |
-| Unit 3 | Java Networking | `BidNotificationServer.java`, `AuctionChatServer.java` — TCP Socket, UDP |
-| Unit 4 | JDBC | All DAO classes — PreparedStatement, BLOB, CallableStatement, MetaData |
-| Unit 5 | RMI | `AuctionService.java`, `AuctionRMIServer.java`, `AuctionRMIClient.java` |
-| Unit 6 | Servlets & JSP | All Servlets, all JSP pages, Filter, Session, Cookies, FileUpload |
-| Unit 7 | Mail, WebServices, REST, Security | `AuctionMailService.java`, `AuctionRestAPI.java`, `SecurityUtil.java` |
-| Unit 8 | Design Patterns, Hibernate, JSF | `DesignPatterns.java` — Singleton, Factory, Observer, Decorator, Builder |
+- **Backend:** Java 11+, Java Servlets, JSP
+- **Database:** Oracle Database 21c XE, JDBC
+- **Networking:** TCP/UDP Sockets, Java RMI (Remote Method Invocation)
+- **Web Services & APIs:** REST API (Jersey JAX-RS), Java Mail API
+- **Build & Server:** Maven, Apache Tomcat 9.x
+- **Frontend:** HTML5, CSS3, Vanilla JavaScript
+- **Security & Patterns:** BCrypt, Singleton, Factory, Observer, Decorator, Builder
 
 ---
 
 ## 🗂️ Project Structure
 
-```
+```text
 OnlineAuctionSystem/
-├── pom.xml
-├── database_schema.sql
-├── README.md
+├── pom.xml                   # Maven dependencies and build config
+├── database_schema.sql       # Database schema creation script
+├── env.bat                   # Database credentials (to be created)
+├── startApp.bat              # Quick start script for Windows
+├── README.md                 # Project documentation
 └── src/main/
     ├── java/com/auction/
-    │   ├── model/          User, AuctionItem, Bid, Winner
-    │   ├── dao/            UserDAO, AuctionItemDAO, BidDAO, WinnerDAO
-    │   ├── servlet/        Login, Register, Dashboard, Bid, AuctionItem,
-    │   │                   Admin, Search, BidPoll, Logout servlets
-    │   ├── filter/         AuthFilter
-    │   ├── network/        BidNotificationServer, AuctionChatServer,
-    │   │                   AppStartupListener, AuctionExpiryChecker
-    │   ├── rmi/            AuctionService, AuctionServiceImpl,
-    │   │                   AuctionRMIServer, AuctionRMIClient
-    │   ├── mail/           AuctionMailService
-    │   ├── webservice/     AuctionRestAPI (Jersey JAX-RS)
-    │   ├── io/             AuctionLogger
-    │   ├── security/       SecurityUtil (BCrypt)
-    │   └── patterns/       DesignPatterns (All Unit 8 patterns)
+    │   ├── model/            # Data models (User, AuctionItem, Bid)
+    │   ├── dao/              # Database Access Objects (JDBC logic)
+    │   ├── servlet/          # Controllers (Login, Dashboard, Bid)
+    │   ├── filter/           # Authentication and Security filters
+    │   ├── network/          # TCP/UDP Socket Servers
+    │   ├── rmi/              # Remote Method Invocation implementation
+    │   ├── mail/             # Java Mail Service integration
+    │   ├── webservice/       # RESTful API Endpoints
+    │   ├── io/               # File I/O operations and Logs
+    │   ├── security/         # Password hashing and Utils
+    │   └── patterns/         # Gang of Four Design Patterns
     └── webapp/
-        ├── css/            style.css
-        ├── js/             bid-live.js
+        ├── css/              # Stylesheets
+        ├── js/               # Client-side validation and live bidding
         └── WEB-INF/
-            ├── web.xml
-            └── views/      login, register, dashboard, item-detail,
-                            add-item, admin, search-results, error pages
+            ├── web.xml       # Deployment descriptor
+            └── views/        # JSP templates for rendering
 ```
 
 ---
 
-## ⚙️ Prerequisites
+## 📖 Chapter-Wise Implementation (Syllabus Mapping)
 
-| Tool | Version | Download |
-|------|---------|----------|
-| Java JDK | 11+ | https://www.oracle.com/java/technologies/downloads/ |
-| Apache Tomcat | 9.x | https://tomcat.apache.org/download-90.cgi |
-| Oracle Database | XE 21c | https://www.oracle.com/database/technologies/xe-downloads.html |
-| Maven | 3.8+ | https://maven.apache.org/download.cgi |
-| VS Code | Latest | https://code.visualstudio.com/ |
+This project strictly follows the Advanced Java Technologies curriculum, featuring practical tools mapping to specific chapters:
 
-VS Code Extensions needed:
-- Extension Pack for Java
-- Maven for Java
-- Tomcat for Java
+* **Unit 1: Introduction to Application Programming**
+  * Built an optimal **n-tier architecture** incorporating Client, Web Controller (Servlet), Business Logic, Data Access (DAO), and Database layers.
+* **Unit 2: Java I/O**
+  * **`AuctionLogger.java`:** Utilized `FileStreams` and `RandomAccessFile` to export auction bidding records sequentially to CSV files and system logs securely. 
+* **Unit 3: Java Networking**
+  * **`BidNotificationServer.java` & `AuctionChatServer.java`:** Implemented TCP Sockets for real-time bid broadcasting and per-auction chat rooms. Used UDP datagrams to multicast "Ending soon" alerts seamlessly.
+* **Unit 4: Java Database Connectivity (JDBC)**
+  * Established secure DB connectivity via Oracle JDBC driver. Utilized `PreparedStatement`, `CallableStatement`, `ResultSet`, and `MetaData` APIs in the DAO layer securely. Stored items via BLOB data types.
+* **Unit 5: Java RMI (Remote Method Invocation)**
+  * **`AuctionRMIServer` & `AuctionRMIClient`:** Registered services over an RMI Registry (`port 1099`) defining stubs and skeletons for remote independent interactions and console-based bidding.
+* **Unit 6: Java Servlets & JSP**
+  * Used `HttpServlet` API to serve pages and endpoints. Utilized sessions and cookies for authentication tracking, configured `web.xml` deployment descriptors, implemented Filters, and served dynamic JSP views avoiding CGI bottlenecks.
+* **Unit 7: Web Services, REST APIs, & Java Mail**
+  * **`AuctionRestAPI.java`:** Exposed clean REST APIs returning real-time JSON for checking item catalogs, prices, and past winners. Used Java Mail APIs (`AuctionMailService.java`) for email notifications.
+* **Unit 8: Design Patterns & Frameworks**
+  * Heavily used **Creational, Structural, and Behavioral Design Patterns**:
+    * *Singleton:* For DB connections and `AuctionManager`.
+    * *Factory:* `AuctionItemFactory` dynamic instantiation.
+    * *Observer:* Broadcasting bid updates (`BidObserver`).
+    * *Decorator:* Extending bids natively (`PremiumBidDecorator`).
+    * *Builder:* Streamlining object creations without complex constructors.
 
 ---
 
-## 🚀 Step-by-Step Setup
+## 🚀 Run the Project: Step-by-Step Guide
 
-### Step 1 — Oracle Database Setup
+### 1️⃣ Prerequisites
+Make sure you have installed the following software on your machine:
+- **Java JDK 11+**
+- **Apache Tomcat 9.x**
+- **Oracle Database XE 21c**
+- **Maven** Plugin
 
-1. Install Oracle XE and start it
-2. Open SQL Developer or SQL*Plus
-3. Create a new user:
-```sql
-CREATE USER auction_user IDENTIFIED BY auction_pass;
-GRANT CONNECT, RESOURCE, DBA TO auction_user;
-```
-4. Connect as `auction_user` and run:
-```
-File → Run Script → select database_schema.sql
-```
+### 2️⃣ Database Setup
+1. Launch **Oracle XE** and connect via SQL Developer or SQL*Plus as SYSTEM.
+2. Create the project workspace/user:
+   ```sql
+   CREATE USER auction_user IDENTIFIED BY auction_pass;
+   GRANT CONNECT, RESOURCE, DBA TO auction_user;
+   ```
+3. Connect strictly as `auction_user`.
+4. Locate the file `database_schema.sql` at the root folder and run it to construct tables (users, items, bids...).
 
-### Step 2 — Oracle JDBC Driver
-
-The ojdbc8.jar is NOT in Maven Central. Install it manually:
-
-```bash
-# Download ojdbc8.jar from:
-# https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html
-
-# Then install into local Maven repo:
-mvn install:install-file \
-  -Dfile=ojdbc8.jar \
-  -DgroupId=com.oracle \
-  -DartifactId=ojdbc8 \
-  -Dversion=19.3 \
-  -Dpackaging=jar
-```
-
-### Step 3 — Configure DB Connection
-
-Create a file called `env.bat` in the project root (this file is in `.gitignore` — never commit it):
+### 3️⃣ Configure Environment Properties
+The project loads configurations dynamically. Create a file named **`env.bat`** (at root directory) bridging your DB:
 ```bat
+:: env.bat
 set DB_URL=jdbc:oracle:thin:@localhost:1521:XE
 set DB_USER=auction_user
 set DB_PASS=auction_pass
 ```
-`startApp.bat` automatically loads `env.bat` at startup. The app reads credentials via `System.getenv()` — credentials are never hardcoded in source files.
 
-### Step 4 — Configure JavaMail (Optional)
-
-Edit `src/main/java/com/auction/mail/AuctionMailService.java`:
-```java
-private static final String MAIL_FROM = "your.email@gmail.com";
-private static final String MAIL_USER = "your.email@gmail.com";
-private static final String MAIL_PASS = "your_app_password"; // Gmail App Password
-```
-> **Gmail App Password:** Google Account → Security → 2-Step Verification → App Passwords
-
-### Step 5 — Build the Project
-
-```bash
-cd OnlineAuctionSystem
-mvn clean package -DskipTests
-```
-This creates: `target/OnlineAuctionSystem.war`
-
-### Step 6 — Deploy to Tomcat
-
-**Option A — VS Code:**
-1. In VS Code, right-click on the project → "Run on Tomcat Server"
-2. Select your Tomcat 9 installation
-
-**Option B — Manual:**
-```bash
-cp target/OnlineAuctionSystem.war /path/to/tomcat/webapps/
-# Start Tomcat:
-/path/to/tomcat/bin/startup.sh   # Linux/Mac
-/path/to/tomcat/bin/startup.bat  # Windows
-```
-
-### Step 7 — Start RMI Server (for Unit 5)
-
-```bash
-# In a separate terminal:
-java -cp target/OnlineAuctionSystem.war com.auction.rmi.AuctionRMIServer
-```
-
-### Step 8 — Access the Application
-
-| URL | Description |
-|-----|-------------|
-| http://localhost:8080/OnlineAuctionSystem/ | Login page |
-| http://localhost:8080/OnlineAuctionSystem/RegisterServlet | Register |
-| http://localhost:8080/OnlineAuctionSystem/DashboardServlet | Dashboard |
-| http://localhost:8080/OnlineAuctionSystem/AdminServlet | Admin panel |
-| http://localhost:8080/OnlineAuctionSystem/api/items | REST API |
-
----
-
-## 🔌 REST API Endpoints (Unit 7)
-
-```
-GET  /api/items              → All active auctions (JSON)
-GET  /api/items/{id}         → Single item details
-GET  /api/items/{id}/bids    → Bid history for an item
-GET  /api/items/search?q=... → Search items
-POST /api/bids               → Place a bid
-GET  /api/winners            → All auction winners
-GET  /api/winners/item/{id}  → Winner for a specific item
-```
-
----
-
-## 🔌 Socket Servers (Unit 3)
-
-| Server | Port | Purpose |
-|--------|------|---------|
-| BidNotificationServer | 9090 | Real-time bid broadcasts (TCP) |
-| AuctionChatServer | 9092 | Per-auction chat rooms (TCP) |
-| UDP Broadcast | 9091 | "Ending soon" alerts |
-
-Both start automatically when Tomcat deploys the app (`AppStartupListener`).
-
----
-
-## 🔌 RMI Server (Unit 5)
-
-```
-RMI Registry Port: 1099
-Service Name:      AuctionService
-Lookup URL:        rmi://localhost/AuctionService
-```
-
-Run `AuctionRMIClient.java` as a standalone Java application for console-based bidding.
-
----
-
-## 🎨 Design Patterns Used (Unit 8)
-
-| Pattern | Class | How |
-|---------|-------|-----|
-| Singleton | `AuctionManager`, `BidNotificationServer` | One global instance |
-| Factory | `AuctionItemFactory` | Creates Electronics/Vehicles/Art items |
-| Observer | `BidEventPublisher` + `BidObserver` | Notifies on new bids |
-| Decorator | `PremiumBidDecorator`, `ReserveBidDecorator` | Adds features to bids |
-| Builder | `AuctionItemBuilder` | Fluent item creation |
-
----
-
-## 📊 Database Schema
-
-```
-users          → user_id, username, email, password, role
-auction_items  → item_id, title, category, current_price, image_data (BLOB)
-bids           → bid_id, item_id, bidder_id, bid_amount
-winners        → winner_id, item_id, user_id, winning_amount
-watchlist      → watch_id, user_id, item_id
-messages       → msg_id, item_id, sender_id, content
-```
-
-Stored Procedure: `determine_winner(item_id)` — called via `CallableStatement`
-
-
----
-
-## 🚀 Quick Run (Windows)
-
+### 4️⃣ Install Oracle JDBC manually
+Because Oracle constraints its JDBC driver via direct maven downloads, do a one-time configuration via CLI:
 ```bat
-:: First time only — kill any existing Java process
-Get-Process -Name java | Stop-Process -Force
-
-
-:: Run the app
-startApp.bat
+mvn install:install-file -Dfile=ojdbc8.jar -DgroupId=com.oracle -DartifactId=ojdbc8 -Dversion=19.3 -Dpackaging=jar
 ```
+*(Alternative: You may place the `ojdbc8.jar` file manually inside Apache Tomcat's `lib` directory.)*
 
-Access at: `http://localhost:8080`
+### 5️⃣ Booting up Localhost (How to Run)
+The application comes with the Windows utility script meant to simplify boot processes!
+
+1. Open your terminal in the directory where `startApp.bat` and `pom.xml` reside.
+2. Run the batch file natively:
+   ```bat
+   startApp.bat
+   ```
+   *(Note: This completely packages your MAVEN target, bridges `env.bat`, starts Tomcat, and deploys it automatically.)*
+
+### 🌐 Checking Output (Localhost Port)
+Once successfully compiled and booted, the Tomcat server operates exclusively on the following localhost port address in your browser:
+
+👉 **URL:** [http://localhost:8080](http://localhost:8080)
+- *Default Port check: `8080`*
+- *RMI Port: `1099`*
+- *Socket Notification Port: `9090`*
+
+Explore, Register a brand-new user on localhost, publish Items, bid via chat seamlessly, and win the auctions!
+
+<div align="center">
+  <br/>
+  <b>Made to demonstrate advanced Java Engineering</b>
+</div>
