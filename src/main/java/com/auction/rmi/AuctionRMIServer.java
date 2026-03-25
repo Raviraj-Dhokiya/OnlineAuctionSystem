@@ -147,42 +147,48 @@ public class AuctionRMIServer extends UnicastRemoteObject implements AuctionRMII
         return "Auction RMI Server is running on port " + RMI_PORT;
     }
 
-    // ── Main Method: RMI Server Start ─────────────────────────────────────────
+    // ── Server Start Methods ──────────────────────────────────────────────────
 
     /**
-     * RMI Server ko start karo:
-     *   1. AuctionRMIServer ka object banao (implement karta hai AuctionRMIInterface)
-     *   2. Port 1099 par RMI Registry create karo
-     *   3. "AuctionService" naam se is object ko bind karo
+     * IMPROVEMENT #3: startServer() nayi method — AppStartupListener se call hoti hai.
+     * Isse RMI server webapp ke saath automatically start hota hai.
+     * Agar registry already exist kare (already started) toh gracefully handle karo.
      *
-     * Client LocateRegistry.getRegistry("localhost", 1099) se connect karega.
+     * @throws Exception agar server start nahi hua
+     */
+    public static void startServer() throws Exception {
+        System.out.println("[RMI Server] Starting Auction RMI Server on port " + RMI_PORT + "...");
+
+        AuctionRMIServer server = new AuctionRMIServer();
+
+        Registry registry;
+        try {
+            // Naya registry create karo
+            registry = LocateRegistry.createRegistry(RMI_PORT);
+        } catch (RemoteException e) {
+            // Registry pehle se exist karti hai (e.g., restart ke case mein)
+            registry = LocateRegistry.getRegistry(RMI_PORT);
+        }
+
+        registry.rebind(SERVICE_NAME, server); // rebind = bind or replace (safe for restarts)
+
+        System.out.println("[RMI Server] Bound as '" + SERVICE_NAME + "' on port " + RMI_PORT);
+        System.out.println("[RMI Server] Waiting for client connections...");
+    }
+
+    /**
+     * RMI Server ko standalone start karo (manual/command-line use ke liye).
+     * AppStartupListener ab startServer() directly call karta hai.
      */
     public static void main(String[] args) {
         try {
-            System.out.println("[RMI Server] Starting Auction RMI Server on port " + RMI_PORT + "...");
-
-            // Step 1: Server object banao (UnicastRemoteObject se extend kiya hai)
-            AuctionRMIServer server = new AuctionRMIServer();
-
-            // Step 2: RMI Registry port 1099 par create karo
-            Registry registry = LocateRegistry.createRegistry(RMI_PORT);
-
-            // Step 3: "AuctionService" naam se bind karo
-            registry.bind(SERVICE_NAME, server);
-
-            System.out.println("[RMI Server] ✅ Bound as '" + SERVICE_NAME + "' on port " + RMI_PORT);
-            System.out.println("[RMI Server] Waiting for client connections...");
-            System.out.println("[RMI Server] Client can connect with:");
-            System.out.println("             LocateRegistry.getRegistry(\"localhost\", 1099)");
-            System.out.println("             registry.lookup(\"AuctionService\")");
-
+            startServer();
             // Server tab tak chalta rahega jab tak manually band na karo
-            // (main thread alive rakhta hai)
             Thread.currentThread().join();
-
         } catch (Exception e) {
-            System.err.println("[RMI Server] ❌ Failed to start: " + e.getMessage());
+            System.err.println("[RMI Server] Failed to start: " + e.getMessage());
             e.printStackTrace();
         }
     }
 }
+

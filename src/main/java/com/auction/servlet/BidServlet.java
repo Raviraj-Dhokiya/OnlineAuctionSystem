@@ -7,6 +7,7 @@ import com.auction.dao.WinnerDAO;
 import com.auction.model.*;
 import com.auction.security.SecurityUtil;
 import com.auction.network.BidNotificationServer;
+import com.auction.patterns.AuctionBidNotifier;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
@@ -171,13 +172,20 @@ public class BidServlet extends HttpServlet {
         Bid bid = new Bid(itemId, loggedUser.getUserId(), bidAmount);
         boolean success = bidDAO.placeBid(bid);
         if (success) {
-            // Real-time notification — sab connected browsers ko batao
+            // Real-time notification — sab connected browsers ko batao (TCP Socket)
             AuctionItem item = itemDAO.findById(itemId);
             BidNotificationServer.getInstance().broadcastBidUpdate(
                     itemId,
                     loggedUser.getUsername(),
                     bidAmount,
                     item != null ? item.getTitle() : "");
+
+            // BUG #5 FIX: Observer Pattern trigger karo — pehle yeh KABHI call nahi hota tha!
+            // Email observer, Watchlist observer, aur Log observer sab ab trigger honge.
+            if (item != null) {
+                Bid placedBid = new Bid(itemId, loggedUser.getUserId(), bidAmount);
+                AuctionBidNotifier.getInstance().publish(placedBid, item);
+            }
 
             res.sendRedirect(req.getContextPath() + "/BidServlet?itemId=" + itemId + "&success=1");
         } else {

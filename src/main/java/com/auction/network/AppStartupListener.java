@@ -1,5 +1,6 @@
 package com.auction.network;
 
+import com.auction.rmi.AuctionRMIServer;
 import com.auction.util.DBConnection;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -7,8 +8,8 @@ import javax.servlet.annotation.WebListener;
 
 /**
  * AppStartupListener - Unit 6 (Servlet lifecycle)
- * Starts BidNotificationServer and AuctionChatServer
- * when Tomcat deploys the application.
+ * Starts BidNotificationServer, AuctionChatServer, AuctionExpiryChecker,
+ * and AuctionRMIServer when Tomcat deploys the application.
  */
 @WebListener
 public class AppStartupListener implements ServletContextListener {
@@ -32,6 +33,21 @@ public class AppStartupListener implements ServletContextListener {
         t.start();
         System.out.println("[Startup] AuctionExpiryChecker started.");
 
+        // IMPROVEMENT #3 FIX: RMI Server auto-start karo (Unit 5 - RMI)
+        // Pehle RMI server manually run karna padta tha. Ab webapp ke saath automatically start hoga.
+        // Daemon thread mein chalta hai taaki JVM shutdown block na kare.
+        Thread rmiThread = new Thread(() -> {
+            try {
+                AuctionRMIServer.startServer();
+                System.out.println("[Startup] AuctionRMIServer started successfully.");
+            } catch (Exception e) {
+                System.err.println("[Startup] AuctionRMIServer failed to start: " + e.getMessage());
+            }
+        }, "AuctionRMIServer-Thread");
+        rmiThread.setDaemon(true);
+        rmiThread.start();
+        System.out.println("[Startup] AuctionRMIServer starting on daemon thread...");
+
         System.out.println("\n");
         System.out.println("==========================================================");
         System.out.println("   >>> AUCTION SYSTEM IS RUNNING SUCCESSFULLY! <<<        ");
@@ -47,3 +63,4 @@ public class AppStartupListener implements ServletContextListener {
         System.out.println("[Startup] Servers stopped.");
     }
 }
+

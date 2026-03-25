@@ -189,10 +189,16 @@ public class BidDAO {
      * Get the highest bid for an item
      */
     public Bid getHighestBid(int itemId) {
+        // MEDIUM BUG #1 FIX: FETCH FIRST 1 ROWS ONLY sirf Oracle 12c+ mein kaam karta hai.
+        // ROWNUM subquery pattern sabhi Oracle versions (11g+) ke saath compatible hai.
         String sql = "SELECT b.*, u.username AS bidder_name " +
                      "FROM bids b JOIN users u ON b.bidder_id = u.user_id " +
-                     "WHERE b.item_id = ? " +
-                     "ORDER BY b.bid_amount DESC FETCH FIRST 1 ROWS ONLY";
+                     "WHERE b.bid_id = (" +
+                     "  SELECT bid_id FROM (" +
+                     "    SELECT bid_id FROM bids WHERE item_id = ? " +
+                     "    ORDER BY bid_amount DESC" +
+                     "  ) WHERE ROWNUM = 1" +
+                     ")";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 

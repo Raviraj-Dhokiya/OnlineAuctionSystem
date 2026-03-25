@@ -179,25 +179,7 @@ public class PremiumBidDecorator extends BidDecorator {
         return new PremiumBidDecorator(basic, maxLimit);
     }
 
-    // ── Demo ──────────────────────────────────────────────────────────────────
-    public static void main(String[] args) {
-        System.out.println("=== Decorator Pattern Demo ===");
-
-        // Normal bid
-        BidComponent normalBid = new BasicBid(1, 42, 5000.0);
-        System.out.println("Normal: " + normalBid.getDescription());
-        System.out.println(normalBid.execute());
-
-        System.out.println();
-
-        // Premium bid (auto-increment up to ₹8000)
-        BidComponent premiumBid = PremiumBidDecorator.wrap(1, 99, 5000.0, 8000.0);
-        System.out.println("Premium: " + premiumBid.getDescription());
-        System.out.println(premiumBid.execute());
-
-        // Auto-increment test
-        PremiumBidDecorator premium = (PremiumBidDecorator) premiumBid;
-        double next = premium.autoIncrement(5000.0);
-        System.out.println("Next auto bid: ₹" + (next > 0 ? next : "max reached"));
-    }
+    // BEKAR #3: main() demo method removed — production WAR mein unnecessary hai.
+    // Decorator pattern ka explanation already class-level comments mein hai.
 }
+

@@ -76,9 +76,11 @@ public class BidNotificationServer {
 
     public void broadcastBidUpdate(int itemId, String bidderName,
                                    double amount, String itemTitle) {
+        // BUG #6 FIX: escapeJson() se special chars (" and \) sanitize karo
+        // Bina escaping ke, malicious username se JSON break ho sakta tha.
         String msg = String.format(
             "{\"type\":\"BID\",\"itemId\":%d,\"bidder\":\"%s\",\"amount\":%.2f,\"item\":\"%s\",\"time\":\"%s\"}",
-            itemId, bidderName, amount, itemTitle,
+            itemId, escapeJson(bidderName), amount, escapeJson(itemTitle),
             new java.util.Date().toString()
         );
         broadcast(msg);
@@ -87,9 +89,15 @@ public class BidNotificationServer {
     public void broadcastAuctionEnding(int itemId, String itemTitle, long secondsLeft) {
         String msg = String.format(
             "{\"type\":\"ENDING\",\"itemId\":%d,\"item\":\"%s\",\"secondsLeft\":%d}",
-            itemId, itemTitle, secondsLeft
+            itemId, escapeJson(itemTitle), secondsLeft
         );
         broadcast(msg);
+    }
+
+    /** BUG #6 FIX: JSON string escaping — prevent JSON injection. */
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
     private void broadcast(String message) {

@@ -85,15 +85,11 @@
       <c:otherwise>
         <c:forEach var="item" items="${searchResults}">
           <div class="auction-card">
-            <c:choose>
-              <c:when test="${not empty item.imageName}">
-                <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=image&itemId=${item.itemId}"
-                     alt="${item.title}" class="item-img">
-              </c:when>
-              <c:otherwise>
-                <div class="item-img-placeholder">📦</div>
-              </c:otherwise>
-            </c:choose>
+            <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=image&itemId=${item.itemId}"
+                 alt="${item.title}" class="item-img"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                 onload="this.nextElementSibling.style.display='none';">
+            <div class="item-img-placeholder" style="display:none;">📦</div>
             <div class="card-body" style="position: relative;">
               <span class="category-badge">${item.category}</span>
               <span class="bid-count-badge" style="position:absolute; top:16px; right:16px; background:#f0f2f5; color:#666; font-size:0.75rem; padding:4px 8px; border-radius:12px; font-weight:600;">

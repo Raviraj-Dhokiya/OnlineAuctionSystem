@@ -25,41 +25,32 @@ import java.util.List;
  */
 public class AuctionItemDAO {
 
-    // ── Table Auto-Initialization for Multiple Photos ──────────────────────────
-    public AuctionItemDAO() {
-        String setupSql = 
-            "BEGIN " +
-            "  EXECUTE IMMEDIATE 'CREATE TABLE item_images (" +
-            "      image_id NUMBER PRIMARY KEY, " +
-            "      item_id NUMBER REFERENCES auction_items(item_id) ON DELETE CASCADE, " +
-            "      image_data BLOB, " +
-            "      image_name VARCHAR2(255)" +
-            "  )'; " +
-            "EXCEPTION " +
-            "  WHEN OTHERS THEN " +
-            "    IF SQLCODE != -955 THEN RAISE; END IF; " + 
-            "END;";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(setupSql)) {
-            ps.execute();
-        } catch (SQLException e) {
-            System.err.println("[AuctionItemDAO] Table creation ignored or failed: " + e.getMessage());
-        }
-    }
+    // ── Constructor ───────────────────────────────────────────────────────────────
+    // BEKAR #7 FIX: DDL (CREATE TABLE, CREATE SEQUENCE) ab DAO constructor mein
+    // nahi hai. Yeh database_schema.sql mein properly define hai. DAO ka kaam
+    // sirf DML (SELECT/INSERT/UPDATE/DELETE) hai, DDL nahi.
+    public AuctionItemDAO() {}
 
+    /**
+     * addAdditionalImages() — Extra gallery images save karo.
+     *
+     * BUG #3 FIX: Pehle MAX(image_id)+? use hota tha — concurrent batch execution
+     * mein saari rows ek hi MAX value paati thi → duplicate PK violation.
+     * FIX: item_images_seq Oracle SEQUENCE use karo (defined in database_schema.sql).
+     * NEXTVAL hamesha unique number deta hai, even in concurrent inserts.
+     */
     public void addAdditionalImages(int itemId, List<byte[]> imageDataList, List<String> imageNames) {
         if (imageDataList == null || imageDataList.isEmpty()) return;
-        
-        // Oracle 11g compatible auto-increment simulation
+
+        // BUG #3 FIX: item_images_seq.NEXTVAL se unique PK milta hai (race-condition safe)
         String sql = "INSERT INTO item_images (image_id, item_id, image_data, image_name) " +
-                     "VALUES ((SELECT COALESCE(MAX(image_id), 0) + ? FROM item_images), ?, ?, ?)";
+                     "VALUES (item_images_seq.NEXTVAL, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             for (int i = 0; i < imageDataList.size(); i++) {
-                ps.setInt(1, i + 1); // 1, 2, 3.. increments added to base max ID
-                ps.setInt(2, itemId);
-                ps.setBytes(3, imageDataList.get(i));
-                ps.setString(4, imageNames.get(i));
+                ps.setInt(1, itemId);
+                ps.setBytes(2, imageDataList.get(i));
+                ps.setString(3, imageNames.get(i));
                 ps.addBatch();
             }
             ps.executeBatch();
@@ -138,8 +129,11 @@ public class AuctionItemDAO {
             ps.setTimestamp(11, item.getEndTime());
 
             ps.executeUpdate();
-            ResultSet keys = ps.getGeneratedKeys();
-            if (keys.next()) return keys.getInt(1);
+            // BUG #2 FIX: GeneratedKeys ResultSet kabhi close nahi hoti thi.
+            // try-with-resources se automatically close hogi.
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) return keys.getInt(1);
+            }
 
         } catch (SQLException e) {
             System.err.println("[AuctionItemDAO] addItem error: " + e.getMessage());

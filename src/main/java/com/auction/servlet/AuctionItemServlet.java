@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * ════════════════════════════════════════════════════════
@@ -134,6 +135,11 @@ public class AuctionItemServlet extends HttpServlet {
         }
 
         // Default: "Add New Item" form dikhao
+        // BUG #4 FIX: CSRF token generate karo (same as BidServlet/AdminServlet pattern)
+        HttpSession session = req.getSession(true);
+        String csrfToken = UUID.randomUUID().toString();
+        session.setAttribute("csrfToken_addItem", csrfToken);
+        req.setAttribute("csrfToken", csrfToken); // JSP mein use hoga
         req.getRequestDispatcher("/WEB-INF/views/add-item.jsp").forward(req, res);
     }
 
@@ -147,6 +153,15 @@ public class AuctionItemServlet extends HttpServlet {
         // Session se seller info nikalo (current logged-in user = seller)
         HttpSession session = req.getSession(false);
         User seller = (User) session.getAttribute("loggedUser");
+
+        // BUG #4 FIX: CSRF token verify karo (one-time use)
+        String formToken = req.getParameter("csrfToken");
+        String sessToken = (String) session.getAttribute("csrfToken_addItem");
+        if (formToken == null || !formToken.equals(sessToken)) {
+            res.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token.");
+            return;
+        }
+        session.removeAttribute("csrfToken_addItem"); // one-time use — invalidate
 
         // ── Multipart form check ─────────────────────────────────────────────
         // Image upload ke liye form "multipart/form-data" hona chahiye

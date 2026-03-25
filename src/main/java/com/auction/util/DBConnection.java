@@ -134,8 +134,6 @@ public class DBConnection {
         }
     }
 
-    public static void main(String[] args) {
-        testConnection();
-        printPoolStats();
-    }
+    // BEKAR #2: main() test method removed — production code mein test entry point nahi hona chahiye.
+    // testConnection() method separate diagnostic use ke liye abhi bhi hai.
 }

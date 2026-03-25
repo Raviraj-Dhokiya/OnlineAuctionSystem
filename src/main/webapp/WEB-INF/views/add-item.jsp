@@ -36,6 +36,9 @@
   <form action="${pageContext.request.contextPath}/AuctionItemServlet"
         method="post" enctype="multipart/form-data" class="form-card">
 
+    <%-- BUG #4 FIX: CSRF token hidden field — AuctionItemServlet.doPost() verify karega --%>
+    <input type="hidden" name="csrfToken" value="${csrfToken}">
+
     <div class="form-group">
       <label>Item Title *</label>
       <input type="text" name="title" placeholder="e.g. Vintage Guitar 1965" required>

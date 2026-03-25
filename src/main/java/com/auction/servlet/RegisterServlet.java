@@ -61,14 +61,23 @@ public class RegisterServlet extends HttpServlet {
         String fullName  = SecurityUtil.sanitizeInput(req.getParameter("fullName"));
         String phone     = SecurityUtil.sanitizeInput(req.getParameter("phone"));
 
-        // ── Validation 0: Phone compulsory ───────────────────────────────────
+        // ── Validation 0: Phone compulsory ────────────────────────────────────
         if (phone == null || phone.trim().isEmpty()) {
             req.setAttribute("error", "Phone number is compulsory.");
             req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, res);
             return;
         }
 
-        // ── Validation 1: Password aur Confirm Password match kare? ──────────
+        // MEDIUM BUG #3 FIX: Username validation — sirf alphanumeric aur underscore allow karo
+        // Spaces, special chars, bahut chhota ya bada username reject karo.
+        if (username == null || !username.matches("[a-zA-Z0-9_]{3,30}")) {
+            req.setAttribute("error",
+                "Username must be 3-30 characters and can only contain letters, numbers, and underscores.");
+            req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, res);
+            return;
+        }
+
+        // ── Validation 1: Password aur Confirm Password match kare? ──────────────────
         if (!password.equals(confirm)) {
             req.setAttribute("error", "Passwords do not match.");
             req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, res);

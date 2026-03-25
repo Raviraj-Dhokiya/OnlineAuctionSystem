@@ -158,31 +158,7 @@ public class AuctionItemBuilder {
         return item;
     }
 
-    // ── Demo ─────────────────────────────────────────────────────────────────
-    public static void main(String[] args) {
-        System.out.println("=== Builder Pattern Demo ===");
-
-        // Fluent API se item banana
-        AuctionItem guitar = new AuctionItemBuilder()
-                .title("1960s Vintage Guitar")
-                .description("Rare collectible electric guitar in pristine condition.")
-                .category("Music & Instruments")
-                .startingPrice(25000.0)
-                .reservePrice(30000.0)
-                .sellerId(5)
-                .durationDays(14)
-                .status("ACTIVE")
-                .build();
-
-        System.out.println("Built: " + guitar);
-
-        // Minimal build (only required fields)
-        AuctionItem simple = new AuctionItemBuilder()
-                .title("Old Books Collection")
-                .startingPrice(500.0)
-                .sellerId(8)
-                .build(); // defaults: category=General, 7 days, no reserve
-
-        System.out.println("Simple: " + simple);
-    }
+    // BEKAR #3: main() demo method removed — production WAR mein unnecessary hai.
+    // Builder pattern ka demo already code comments mein explain hai.
 }
+

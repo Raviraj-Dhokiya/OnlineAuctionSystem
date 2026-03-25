@@ -95,9 +95,9 @@ public class UserDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) return mapUser(rs);
+            try (ResultSet rs = ps.executeQuery()) {  // BUG FIX #1: try-with-resources
+                if (rs.next()) return mapUser(rs);
+            }
 
         } catch (SQLException e) {
             System.err.println("[UserDAO] findByUsername error: " + e.getMessage());
@@ -114,9 +114,9 @@ public class UserDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) return mapUser(rs);
+            try (ResultSet rs = ps.executeQuery()) {  // BUG FIX #1: try-with-resources
+                if (rs.next()) return mapUser(rs);
+            }
 
         } catch (SQLException e) {
             System.err.println("[UserDAO] findById error: " + e.getMessage());
@@ -133,9 +133,9 @@ public class UserDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) return mapUser(rs);
+            try (ResultSet rs = ps.executeQuery()) {  // BUG FIX #1: try-with-resources
+                if (rs.next()) return mapUser(rs);
+            }
 
         } catch (SQLException e) {
             System.err.println("[UserDAO] findByEmail error: " + e.getMessage());
@@ -170,8 +170,9 @@ public class UserDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getInt(1) > 0;
+            try (ResultSet rs = ps.executeQuery()) {  // BUG FIX #1: try-with-resources
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
 
         } catch (SQLException e) {
             System.err.println("[UserDAO] usernameExists error: " + e.getMessage());
@@ -188,8 +189,9 @@ public class UserDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getInt(1) > 0;
+            try (ResultSet rs = ps.executeQuery()) {  // BUG FIX #1: try-with-resources
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
 
         } catch (SQLException e) {
             System.err.println("[UserDAO] emailExists error: " + e.getMessage());
@@ -255,37 +257,9 @@ public class UserDAO {
         }
     }
 
-    // ── METADATA (Unit 4 - MetaData APIs) ───────────────────────────────────
-
-    /**
-     * Print column metadata of users table (Unit 4 - MetaData)
-     */
-    public void printTableMetaData() {
-        String sql = "SELECT * FROM users WHERE ROWNUM = 1";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            ResultSetMetaData meta = rs.getMetaData();
-            int cols = meta.getColumnCount();
-            System.out.println("\n=== USERS Table Metadata ===");
-            for (int i = 1; i <= cols; i++) {
-                System.out.printf("Col %d: %-20s | Type: %-15s | Nullable: %s%n",
-                    i,
-                    meta.getColumnName(i),
-                    meta.getColumnTypeName(i),
-                    meta.isNullable(i) == ResultSetMetaData.columnNullable ? "YES" : "NO");
-            }
-            DatabaseMetaData dbMeta = conn.getMetaData();
-            System.out.println("DB: " + dbMeta.getDatabaseProductName() +
-                               " v" + dbMeta.getDatabaseProductVersion());
-
-        } catch (SQLException e) {
-            System.err.println("[UserDAO] metadata error: " + e.getMessage());
-        }
-    }
-
     // ── HELPER ───────────────────────────────────────────────────────────────
+    // NOTE: printTableMetaData() removed — dead code (Bekar #6).
+    // DBConnection.testConnection() already serves the same diagnostic purpose.
 
     /**
      * mapUser() — ResultSet ki current row ko User object mein convert karo.

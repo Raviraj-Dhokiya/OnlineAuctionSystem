@@ -33,6 +33,21 @@ public class AuctionMailService {
     private static final String MAIL_FROM  = System.getenv("MAIL_FROM");
     private static final String MAIL_USER  = System.getenv("MAIL_USER");
     private static final String MAIL_PASS  = System.getenv("MAIL_PASS");
+
+    // BUG #7 FIX: Improvement #6: Base URL env var se lo (hardcoded localhost hata do)
+    private static final String AUCTION_BASE_URL = System.getenv("AUCTION_BASE_URL") != null
+            ? System.getenv("AUCTION_BASE_URL")
+            : "http://localhost:8080/OnlineAuctionSystem";
+
+    // BUG #7 FIX: Startup pe null check — agar env vars set nahi hain toh
+    // background thread mein silent NPE hone ke bajaye pehle hi warn karo.
+    static {
+        if (MAIL_FROM == null || MAIL_USER == null || MAIL_PASS == null) {
+            System.err.println("[AuctionMailService] WARNING: MAIL_FROM, MAIL_USER, or MAIL_PASS " +
+                    "environment variable(s) not set. Email notifications will be disabled. " +
+                    "Add these to env.bat to enable mail sending.");
+        }
+    }
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
@@ -85,10 +100,11 @@ public class AuctionMailService {
             "<h3>Hello %s,</h3>" +
             "<p>Someone placed a higher bid on <strong>%s</strong>.</p>" +
             "<p>New highest bid: <strong>₹%.2f</strong></p>" +
-            "<p><a href='http://localhost:8080/OnlineAuctionSystem/DashboardServlet'>" +
+            // IMPROVEMENT #6 FIX: URL ab env var se aata hai, hardcoded localhost nahi
+            "<p><a href='%s/DashboardServlet'>" +
             "Click here to bid again</a></p>" +
             "</body></html>",
-            username, itemTitle, newBid
+            username, itemTitle, newBid, AUCTION_BASE_URL
         );
         sendEmail(toEmail, subject, body);
     }
@@ -98,7 +114,12 @@ public class AuctionMailService {
      * Java Mail API use karke HTML format mein email SMTP over TLS/SSL send karta hai.
      */
     private static void sendEmail(String to, String subject, String htmlBody) {
-        // Ek nayi Thread banate hain taaki request jaldi complete ho jaye bina ruke (background sending)
+        // BUG #7 FIX: Agar mail credentials set nahi hain toh silently fail mat karo.
+        if (MAIL_FROM == null || MAIL_USER == null || MAIL_PASS == null) {
+            System.err.println("[Mail] Cannot send email to " + to +
+                    " — mail credentials not configured (MAIL_FROM/MAIL_USER/MAIL_PASS).");
+            return;
+        }
         new Thread(() -> {
             try {
                 Session session = getMailSession();

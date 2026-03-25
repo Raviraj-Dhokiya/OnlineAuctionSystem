@@ -97,6 +97,22 @@ CREATE TABLE auto_bids (
     CONSTRAINT uq_auto_bid  UNIQUE(item_id, user_id)  -- Ek user ek item pe sirf ek auto bid
 );
 
+-- 8. ITEM_IMAGES TABLE (for multiple auction item photos)
+-- IMPROVEMENT #2 + BUG #3 FIX: Yeh table pehle sirf AuctionItemDAO constructor mein
+-- runtime par banti thi. Ab properly schema mein define hai.
+CREATE TABLE item_images (
+    image_id    NUMBER PRIMARY KEY,
+    item_id     NUMBER NOT NULL,
+    image_data  BLOB,
+    image_name  VARCHAR2(255),
+    CONSTRAINT fk_img_item FOREIGN KEY (item_id) REFERENCES auction_items(item_id) ON DELETE CASCADE
+);
+
+-- BUG #3 FIX: SEQUENCE for item_images.image_id
+-- NEXTVAL se hamesha unique PK milta hai — concurrent inserts safe hain (no race condition).
+-- Pehle MAX(image_id)+? use hota tha jo same MAX value de sakta tha to concurrent inserts.
+CREATE SEQUENCE item_images_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+
 -- ============================================================
 -- INDEXES for performance
 -- ============================================================
@@ -105,6 +121,7 @@ CREATE INDEX idx_bids_bidder  ON bids(bidder_id);
 CREATE INDEX idx_items_status ON auction_items(status);
 CREATE INDEX idx_items_end    ON auction_items(end_time);
 CREATE INDEX idx_items_seller ON auction_items(seller_id);
+
 
 -- Function-based indexes for case-insensitive search (searchItems() uses UPPER())
 -- Without these, UPPER(title) LIKE ... cannot use idx_items_status and causes full table scan
