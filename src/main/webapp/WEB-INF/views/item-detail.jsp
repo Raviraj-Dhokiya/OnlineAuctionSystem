@@ -430,7 +430,10 @@
 <body>
 
   <nav class="navbar">
-    <div class="nav-brand">🏆 AuctionHub</div>
+    <div class="nav-brand">
+      <img src="https://thumbs.dreamstime.com/b/online-auction-gavel-internet-bidding-web-site-win-buy-item-d-words-wood-block-closing-website-42430139.jpg" alt="AuctionHub Logo" style="height:36px; width:36px; object-fit:cover; border-radius:8px; margin-right:8px; vertical-align:middle;">
+      AuctionHub
+    </div>
     <div class="nav-links">
       <a href="${pageContext.request.contextPath}/DashboardServlet"   class="btn btn-ghost btn-sm">← Back</a>
       <a href="${pageContext.request.contextPath}/WatchlistServlet"   class="btn btn-ghost btn-sm">⭐ Watchlist</a>
@@ -459,31 +462,30 @@
 
       <%-- Left: image + details --%>
       <div class="item-detail-left">
-        <c:choose>
-          <c:when test="${not empty item.imageName}">
-            <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=image&itemId=${item.itemId}"
-                 alt="${item.title}" class="item-detail-img" id="mainImage">
-          </c:when>
-          <c:otherwise>
-            <div class="item-detail-img-placeholder">📦</div>
-          </c:otherwise>
-        </c:choose>
+        <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=image&itemId=${item.itemId}"
+             alt="${item.title}" class="item-detail-img" id="mainImage"
+             onerror="this.style.display='none'; document.getElementById('mainImgPlaceholder').style.display='flex';"
+             onload="document.getElementById('mainImgPlaceholder').style.display='none'; this.style.display='';"
+        >
+        <div id="mainImgPlaceholder" class="item-detail-img-placeholder" style="display:none;">📦</div>
 
         <%-- MULTI-IMAGE GALLERY (Added) --%>
-        <c:if test="${not empty extraImages or not empty item.imageName}">
-          <div class="item-gallery" style="display:flex; gap:10px; margin-top:15px; margin-bottom:20px; overflow-x:auto;">
-            <!-- Thumbnail of main cover image -->
-            <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=image&itemId=${item.itemId}"
+        <div class="item-gallery" style="display:flex; gap:10px; margin-top:15px; margin-bottom:20px; overflow-x:auto;" id="galleryStrip">
+          <!-- Thumbnail of main cover image -->
+          <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=image&itemId=${item.itemId}"
+               style="height:70px; width:70px; border-radius:8px; object-fit:cover; border:2px solid #ddd; cursor:pointer;"
+               onerror="this.style.display='none';"
+               onclick="document.getElementById('mainImage').src=this.src; document.getElementById('mainImgPlaceholder').style.display='none'; document.getElementById('mainImage').style.display='';"
+          >
+          <!-- Extra 4 Thumbnails -->
+          <c:forEach var="imgId" items="${extraImages}">
+            <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=specificImage&itemId=${item.itemId}&imgId=${imgId}"
                  style="height:70px; width:70px; border-radius:8px; object-fit:cover; border:2px solid #ddd; cursor:pointer;"
-                 onclick="document.getElementById('mainImage').src=this.src;">
-            <!-- Extra 4 Thumbnails -->
-            <c:forEach var="imgId" items="${extraImages}">
-              <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=specificImage&itemId=${item.itemId}&imgId=${imgId}"
-                   style="height:70px; width:70px; border-radius:8px; object-fit:cover; border:2px solid #ddd; cursor:pointer;"
-                   onclick="document.getElementById('mainImage').src=this.src;">
-            </c:forEach>
-          </div>
-        </c:if>
+                 onerror="this.style.display='none';"
+                 onclick="document.getElementById('mainImage').src=this.src; document.getElementById('mainImgPlaceholder').style.display='none'; document.getElementById('mainImage').style.display='';"
+            >
+          </c:forEach>
+        </div>
 
         <div class="item-meta">
           <span class="category-badge">${item.category}</span>

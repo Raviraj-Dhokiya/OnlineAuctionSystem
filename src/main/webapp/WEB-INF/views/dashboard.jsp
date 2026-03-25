@@ -12,7 +12,10 @@
 
 <%-- NAVBAR --%>
 <nav class="navbar">
-  <div class="nav-brand">🏆 AuctionHub</div>
+  <div class="nav-brand">
+    <img src="https://thumbs.dreamstime.com/b/online-auction-gavel-internet-bidding-web-site-win-buy-item-d-words-wood-block-closing-website-42430139.jpg" alt="AuctionHub Logo" style="height:36px; width:36px; object-fit:cover; border-radius:8px; margin-right:8px; vertical-align:middle;">
+    AuctionHub
+  </div>
   <div class="nav-links">
     <span>Welcome, <strong>${sessionScope.username}</strong></span>
     <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-ghost btn-sm">Home</a>
@@ -43,16 +46,11 @@
       <c:otherwise>
         <c:forEach var="item" items="${activeItems}">
           <div class="auction-card">
-            <%-- Item image (BLOB from DB - Unit 4) --%>
-            <c:choose>
-              <c:when test="${not empty item.imageName}">
-                <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=image&itemId=${item.itemId}"
-                     alt="${item.title}" class="item-img">
-              </c:when>
-              <c:otherwise>
-                <div class="item-img-placeholder">📦</div>
-              </c:otherwise>
-            </c:choose>
+            <%-- Item image --%>
+            <img src="${pageContext.request.contextPath}/AuctionItemServlet?action=image&itemId=${item.itemId}"
+                 alt="${item.title}" class="item-img"
+                 onerror="this.style.display='none'; var ph=document.createElement('div'); ph.className='item-img-placeholder'; ph.textContent='\uD83D\uDCE6'; this.parentNode.insertBefore(ph, this);"
+            >
 
             <div class="card-body" style="position: relative;">
               <span class="category-badge">${item.category}</span>
@@ -151,7 +149,9 @@
                     </c:when>
                     <c:otherwise>
                       <span class="badge badge-warn">Pending</span>
-                      <a href="${pageContext.request.contextPath}/PaymentServlet?winnerId=${win.winnerId}&amount=${win.winningAmount}&title=${win.itemTitle}" class="btn btn-primary btn-sm" style="margin-left:10px;">Pay Now</a>
+                      <a href="${pageContext.request.contextPath}/PaymentServlet?winnerId=${win.winnerId}&amount=${win.winningAmount}&title=${win.itemTitle}"
+                         style="display:inline-block; background:#16a34a; color:#ffffff !important; font-weight:700; font-size:0.85rem; padding:6px 14px; border-radius:6px; text-decoration:none; margin-left:10px; border:2px solid #15803d;"
+                      >💳 Pay Now</a>
                     </c:otherwise>
                   </c:choose>
                 </td>

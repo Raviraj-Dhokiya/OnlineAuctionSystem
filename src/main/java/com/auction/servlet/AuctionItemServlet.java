@@ -69,7 +69,7 @@ public class AuctionItemServlet extends HttpServlet {
                 int imgId = Integer.parseInt(req.getParameter("imgId"));
                 String uploadPath = System.getProperty("user.home") + java.io.File.separator + "auction_uploads";
                 java.io.File file = new java.io.File(uploadPath, "item_" + itemId + "_" + imgId + ".jpg");
-                
+
                 if (file.exists()) {
                     byte[] imgData = java.nio.file.Files.readAllBytes(file.toPath());
                     res.setContentType("image/jpeg");
@@ -85,8 +85,6 @@ public class AuctionItemServlet extends HttpServlet {
         }
 
         if ("image".equals(action)) {
-            // ── Image serve karo (BLOB retrieval) ────────────────────────────
-            // FIX: NumberFormatException — itemId parse try-catch mein
             String itemIdStr = req.getParameter("itemId");
             int itemId;
             try {
@@ -96,9 +94,35 @@ public class AuctionItemServlet extends HttpServlet {
                 return;
             }
 
-            // DB se image ka binary data nikalo
-            byte[] imageData = itemDAO.getItemImage(itemId);
+            // Check LOCAL FILESYSTEM first (DB quota exceeded, BLOBs can't be stored)
+            // Primary cover image is saved as: ~/auction_uploads/item_X_0.jpg
+            String uploadPath = System.getProperty("user.home") + java.io.File.separator + "auction_uploads";
 
+            // Try _0.jpg first (new items), then _1, _2, _3, _4 (older items where cover was saved as extra)
+            String[] candidates = {
+                "item_" + itemId + "_0.jpg",
+                "item_" + itemId + "_1.jpg",
+                "item_" + itemId + "_2.jpg",
+                "item_" + itemId + "_3.jpg",
+                "item_" + itemId + "_4.jpg"
+            };
+            for (String candidate : candidates) {
+                java.io.File localFile = new java.io.File(uploadPath, candidate);
+                if (localFile.exists()) {
+                    try {
+                        byte[] imgData = java.nio.file.Files.readAllBytes(localFile.toPath());
+                        res.setContentType("image/jpeg");
+                        res.setContentLength(imgData.length);
+                        res.getOutputStream().write(imgData);
+                        return;
+                    } catch (IOException e) {
+                        System.err.println("[AuctionItemServlet] Error reading local image: " + e.getMessage());
+                    }
+                }
+            }
+
+            // Fallback: try DB BLOB (for legacy items stored before filesystem approach)
+            byte[] imageData = itemDAO.getItemImage(itemId);
             if (imageData != null) {
                 res.setContentType("image/jpeg");
                 res.setContentLength(imageData.length);
@@ -147,6 +171,7 @@ public class AuctionItemServlet extends HttpServlet {
 
             java.util.List<byte[]> extraImageData = new java.util.ArrayList<>();
             java.util.List<String> extraImageNames = new java.util.ArrayList<>();
+            byte[] primaryImageData = null;   // saved to local FS, NOT to DB BLOB
             boolean isFirstImage = true;
 
             for (FileItem fi : fileItems) {
@@ -198,8 +223,10 @@ public class AuctionItemServlet extends HttpServlet {
                         String sanitizedName = SecurityUtil.sanitizeInput(fi.getName());
 
                         if (isFirstImage) {
-                            item.setImageData(imageBytes);
-                            item.setImageName(sanitizedName);
+                            // Store bytes locally (bypass DB quota). Flag imageName so card shows img tag.
+                            primaryImageData = imageBytes;
+                            item.setImageName(sanitizedName); // name stored in DB, data saved to FS
+                            item.setImageData(null);          // never send BLOB to DB
                             isFirstImage = false;
                         } else {
                             if (extraImageData.size() < 4) { // max 4 extra (total 5)
@@ -214,28 +241,33 @@ public class AuctionItemServlet extends HttpServlet {
             // Start time = abhi
             item.setStartTime(new Timestamp(System.currentTimeMillis()));
 
-            // ── DB mein INSERT karo ───────────────────────────────────────────
-            // Returns newly generated item_id (auto-increment)
+            // ── DB mein INSERT karo (with image, fallback without if quota exceeded) ─────
             int newItemId = itemDAO.addItem(item);
 
-            if (newItemId > 0) {
-                // Save additional images to LOCAL SYSTEM FOLDER (Bypassing Oracle Quota Issue)
-                if (!extraImageData.isEmpty()) {
-                    String uploadPath = System.getProperty("user.home") + java.io.File.separator + "auction_uploads";
-                    java.io.File uploadDir = new java.io.File(uploadPath);
-                    if (!uploadDir.exists()) uploadDir.mkdirs(); // create if missing
-                    
-                    for (int i = 0; i < extraImageData.size(); i++) {
-                        java.io.File file = new java.io.File(uploadPath, "item_" + newItemId + "_" + (i + 1) + ".jpg");
-                        java.nio.file.Files.write(file.toPath(), extraImageData.get(i));
-                    }
-                }
 
-                // Success → naye item ki detail page par redirect karo
-                res.sendRedirect(req.getContextPath() +
-                    "/BidServlet?itemId=" + newItemId + "&success=listed");
+
+
+            if (newItemId > 0) {
+                // Save ALL images to LOCAL FILESYSTEM (primary as _0.jpg, extras as _1.jpg etc.)
+                // This bypasses ORA-01536 (Oracle free plan tablespace quota exceeded for BLOBs)
+                String uploadPath = System.getProperty("user.home") + java.io.File.separator + "auction_uploads";
+                java.io.File uploadDir = new java.io.File(uploadPath);
+                if (!uploadDir.exists()) uploadDir.mkdirs();
+
+                // Save primary/cover image as item_X_0.jpg
+                if (primaryImageData != null) {
+                    java.io.File coverFile = new java.io.File(uploadPath, "item_" + newItemId + "_0.jpg");
+                    java.nio.file.Files.write(coverFile.toPath(), primaryImageData);
+                }
+                // Save extra gallery images as item_X_1.jpg, item_X_2.jpg, ...
+                for (int i = 0; i < extraImageData.size(); i++) {
+                    java.io.File file = new java.io.File(uploadPath, "item_" + newItemId + "_" + (i + 1) + ".jpg");
+                    java.nio.file.Files.write(file.toPath(), extraImageData.get(i));
+                }
+                res.sendRedirect(req.getContextPath() + "/BidServlet?itemId=" + newItemId + "&success=listed");
             } else {
-                req.setAttribute("error", "Failed to list item. Please try again.");
+                req.setAttribute("error", "Failed to list item. Database storage may be full. Try without an image, or contact admin.");
+                req.setAttribute("errorDetail", "quota");
                 req.getRequestDispatcher("/WEB-INF/views/add-item.jsp").forward(req, res);
             }
 

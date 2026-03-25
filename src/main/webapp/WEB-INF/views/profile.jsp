@@ -13,7 +13,10 @@
 
 <%-- NAVBAR --%>
 <nav class="navbar">
-  <div class="nav-brand">🏆 AuctionHub</div>
+  <div class="nav-brand">
+    <img src="https://thumbs.dreamstime.com/b/online-auction-gavel-internet-bidding-web-site-win-buy-item-d-words-wood-block-closing-website-42430139.jpg" alt="AuctionHub Logo" style="height:36px; width:36px; object-fit:cover; border-radius:8px; margin-right:8px; vertical-align:middle;">
+    AuctionHub
+  </div>
   <div class="nav-links">
     <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-ghost btn-sm">← Dashboard</a>
     <a href="${pageContext.request.contextPath}/ProfileServlet"   class="btn btn-outline btn-sm">👤 Profile</a>
@@ -85,20 +88,20 @@
             <label for="username">Username</label>
             <input type="text" id="username" value="${profileUser.username}" disabled
                    style="background:#f5f5f5; cursor:not-allowed; color:#888;">
-            <small style="color:#999; font-size:0.8rem;">Username change nahi ho sakta</small>
+            <small style="color:#999; font-size:0.8rem;">Username cannot be changed</small>
           </div>
 
           <div class="form-group">
             <label for="fullName">Full Name *</label>
             <input type="text" id="fullName" name="fullName"
-                   value="${profileUser.fullName}" placeholder="Apna pura naam likhein" required>
+                   value="${profileUser.fullName}" placeholder="Enter your full name" required>
           </div>
 
           <div class="form-group">
             <label for="emailDisp">Email</label>
             <input type="email" id="emailDisp" value="${profileUser.email}" disabled
                    style="background:#f5f5f5; cursor:not-allowed; color:#888;">
-            <small style="color:#999; font-size:0.8rem;">Email change ke liye admin se contact karein</small>
+            <small style="color:#999; font-size:0.8rem;">To change email, please contact the admin</small>
           </div>
 
           <div class="form-group">
@@ -110,7 +113,7 @@
           <hr style="margin: 20px 0; border-color:#f0f0f0;">
           <h3 style="margin-bottom:12px; font-size:1rem; color:#444;">🔒 Password Change (Optional)</h3>
           <small style="color:#999; display:block; margin-bottom:14px;">
-            Sirf tab bharein jab password change karna ho
+            Fill in only if you want to change your password
           </small>
 
           <div class="form-group">
@@ -122,7 +125,7 @@
           <div class="form-group">
             <label for="confirmPassword">Confirm New Password</label>
             <input type="password" id="confirmPassword" name="confirmPassword"
-                   placeholder="Dobara wahi password likhein">
+                   placeholder="Re-enter the same password">
           </div>
 
           <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px;">
@@ -140,7 +143,7 @@
           <c:when test="${empty myBids}">
             <div class="empty-state-mini">
               <span>🎯</span>
-              <p>Abhi tak koi bid nahi lagayi.</p>
+              <p>You haven't placed any bids yet.</p>
               <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-outline btn-sm">Browse Auctions</a>
             </div>
           </c:when>
@@ -189,7 +192,7 @@
           <c:when test="${empty myWins}">
             <div class="empty-state-mini">
               <span>🏆</span>
-              <p>Abhi tak koi auction nahi jeeta. Bidding karo!</p>
+              <p>No auctions won yet. Keep bidding!</p>
             </div>
           </c:when>
           <c:otherwise>
@@ -215,7 +218,9 @@
                         </c:when>
                         <c:otherwise>
                           <span class="badge badge-warn">⏳ Pending</span>
-                          <a href="${pageContext.request.contextPath}/PaymentServlet?winnerId=${win.winnerId}&amount=${win.winningAmount}&title=${win.itemTitle}" class="btn btn-primary btn-sm" style="margin-left:10px;">Pay Now</a>
+                          <a href="${pageContext.request.contextPath}/PaymentServlet?winnerId=${win.winnerId}&amount=${win.winningAmount}&title=${win.itemTitle}"
+                             style="display:inline-block; background:#16a34a; color:#ffffff !important; font-weight:700; font-size:0.85rem; padding:6px 14px; border-radius:6px; text-decoration:none; margin-left:10px; border:2px solid #15803d;"
+                          >💳 Pay Now</a>
                         </c:otherwise>
                       </c:choose>
                     </td>
@@ -239,7 +244,7 @@ document.getElementById('profileForm').addEventListener('submit', function(e) {
   var cp = document.getElementById('confirmPassword').value;
   if (np && np !== cp) {
     e.preventDefault();
-    alert('Passwords match nahi karte! Please dobara check karein.');
+    alert('Passwords do not match! Please check and try again.');
   }
 });
 </script>

@@ -36,7 +36,8 @@
     }
     .btn-pay {
       background-color: #28a745;
-      color: white;
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff !important;
       font-size: 1.2rem;
       font-weight: bold;
       padding: 14px 24px;
@@ -45,6 +46,7 @@
       cursor: pointer;
       width: 100%;
       transition: background-color 0.3s ease;
+      text-shadow: none !important;
     }
     .btn-pay:hover {
       background-color: #218838;
@@ -63,7 +65,10 @@
 <body>
 
 <nav class="navbar">
-  <div class="nav-brand">🏆 AuctionHub</div>
+  <div class="nav-brand">
+    <img src="https://thumbs.dreamstime.com/b/online-auction-gavel-internet-bidding-web-site-win-buy-item-d-words-wood-block-closing-website-42430139.jpg" alt="AuctionHub Logo" style="height:36px; width:36px; object-fit:cover; border-radius:8px; margin-right:8px; vertical-align:middle;">
+    AuctionHub
+  </div>
   <div class="nav-links">
     <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-ghost btn-sm">Cancel</a>
   </div>
@@ -90,7 +95,7 @@
     
     <form action="${pageContext.request.contextPath}/PaymentServlet" method="post">
       <input type="hidden" name="winnerId" value="${winnerId}">
-      <button type="submit" class="btn-pay">Pay ₹<fmt:formatNumber value="${amount}" pattern="#,##0.00"/> Now</button>
+      <button type="submit" class="btn-pay" style="color:#fff !important;">💳 Pay ₹<fmt:formatNumber value="${amount}" pattern="#,##0.00"/> Now</button>
     </form>
     
     <a href="${pageContext.request.contextPath}/DashboardServlet" class="cancel-link">Back to Dashboard</a>

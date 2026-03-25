@@ -22,12 +22,17 @@ import java.util.Properties;
  */
 public class AuctionMailService {
 
-    // ── CONFIGURE THESE ──────────────────────────────────────────────────────
+    // ── Credentials environment variables se aate hain (NEVER hardcode!) ──────
+    // SETUP: env.bat mein add karo (gitignore mein listed hai, commit mat karo):
+    //   set MAIL_FROM=yourname@gmail.com
+    //   set MAIL_USER=yourname@gmail.com
+    //   set MAIL_PASS=your_gmail_app_password
+    // Google Account > Security > App Passwords se generate karo MAIL_PASS.
     private static final String SMTP_HOST  = "smtp.gmail.com";
     private static final int    SMTP_PORT  = 587;
-    private static final String MAIL_FROM  = "your.email@gmail.com";
-    private static final String MAIL_USER  = "your.email@gmail.com";
-    private static final String MAIL_PASS  = "your_app_password_here";
+    private static final String MAIL_FROM  = System.getenv("MAIL_FROM");
+    private static final String MAIL_USER  = System.getenv("MAIL_USER");
+    private static final String MAIL_PASS  = System.getenv("MAIL_PASS");
     // ─────────────────────────────────────────────────────────────────────────
 
     /**

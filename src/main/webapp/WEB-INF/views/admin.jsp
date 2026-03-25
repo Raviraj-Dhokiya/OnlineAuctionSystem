@@ -10,7 +10,10 @@
 </head>
 <body>
 <nav class="navbar">
-  <div class="nav-brand">🏆 AuctionHub — Admin</div>
+  <div class="nav-brand">
+    <img src="https://thumbs.dreamstime.com/b/online-auction-gavel-internet-bidding-web-site-win-buy-item-d-words-wood-block-closing-website-42430139.jpg" alt="AuctionHub Logo" style="height:36px; width:36px; object-fit:cover; border-radius:8px; margin-right:8px; vertical-align:middle;">
+    AuctionHub &mdash; Admin
+  </div>
   <div class="nav-links">
     <a href="${pageContext.request.contextPath}/LogoutServlet" class="btn btn-ghost btn-sm">Logout</a>
   </div>
@@ -42,10 +45,17 @@
             <td><span class="badge ${u.role == 'ADMIN' ? 'badge-info' : 'badge-neutral'}">${u.role}</span></td>
             <td><span class="badge ${u.active ? 'badge-success' : 'badge-error'}">${u.active ? 'Active' : 'Disabled'}</span></td>
             <td>
-              <a href="${pageContext.request.contextPath}/AdminServlet?action=toggleUser&userId=${u.userId}&active=${!u.active}"
-                 class="btn btn-sm ${u.active ? 'btn-outline' : 'btn-primary'}">
-                ${u.active ? 'Disable' : 'Enable'}
-              </a>
+              <%-- POST form with CSRF token — replaces old GET link (CSRF fix) --%>
+              <form method="post" action="${pageContext.request.contextPath}/AdminServlet" style="display:inline;">
+                <input type="hidden" name="action"    value="toggleUser">
+                <input type="hidden" name="userId"    value="${u.userId}">
+                <input type="hidden" name="active"    value="${!u.active}">
+                <input type="hidden" name="csrfToken" value="${csrfToken}">
+                <button type="submit" class="btn btn-sm ${u.active ? 'btn-outline' : 'btn-primary'}"
+                        onclick="return confirm('Are you sure?')">
+                  ${u.active ? 'Disable' : 'Enable'}
+                </button>
+              </form>
             </td>
           </tr>
         </c:forEach>
@@ -75,9 +85,16 @@
             <td><fmt:formatDate value="${item.endTime}" pattern="dd MMM HH:mm"/></td>
             <td>
               <c:if test="${item.status == 'ACTIVE'}">
-                <a href="${pageContext.request.contextPath}/AdminServlet?action=closeAuction&itemId=${item.itemId}"
-                   class="btn btn-sm btn-outline"
-                   onclick="return confirm('Close this auction now?')">Close</a>
+                <%-- POST form with CSRF token — replaces old GET link (CSRF fix) --%>
+                <form method="post" action="${pageContext.request.contextPath}/AdminServlet" style="display:inline;">
+                  <input type="hidden" name="action"    value="closeAuction">
+                  <input type="hidden" name="itemId"    value="${item.itemId}">
+                  <input type="hidden" name="csrfToken" value="${csrfToken}">
+                  <button type="submit" class="btn btn-sm btn-outline"
+                          onclick="return confirm('Close this auction and declare winner?')">
+                    Close
+                  </button>
+                </form>
               </c:if>
             </td>
             <%-- CSV Export: Kisi bhi auction ki bid history download karo --%>
@@ -109,8 +126,14 @@
             <td><fmt:formatDate value="${w.awardedAt}" pattern="dd MMM yyyy"/></td>
             <td>
               <c:if test="${w.paymentStatus == 'PENDING'}">
-                <a href="${pageContext.request.contextPath}/AdminServlet?action=updatePayment&winnerId=${w.winnerId}&status=PAID"
-                   class="btn btn-sm btn-primary">Mark Paid</a>
+                <%-- POST form with CSRF token — replaces old GET link (CSRF fix) --%>
+                <form method="post" action="${pageContext.request.contextPath}/AdminServlet" style="display:inline;">
+                  <input type="hidden" name="action"    value="updatePayment">
+                  <input type="hidden" name="winnerId"  value="${w.winnerId}">
+                  <input type="hidden" name="status"    value="PAID">
+                  <input type="hidden" name="csrfToken" value="${csrfToken}">
+                  <button type="submit" class="btn btn-sm btn-primary">Mark Paid</button>
+                </form>
               </c:if>
             </td>
           </tr>

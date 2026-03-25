@@ -1,6 +1,7 @@
 package com.auction.servlet;
 
 import com.auction.dao.WinnerDAO;
+import com.auction.model.User;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,10 +30,12 @@ public class PaymentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Check if user is logged in
+        // Check if user is logged in — "loggedUser" (User object) use hota hai
+        // poori app mein (BidServlet, DashboardServlet etc.) — "userId" NAHI.
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
-            response.sendRedirect("login.jsp");
+        User loggedUser = (session != null) ? (User) session.getAttribute("loggedUser") : null;
+        if (loggedUser == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 
@@ -58,10 +61,11 @@ public class PaymentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Check if user is logged in
+        // Check if user is logged in — "loggedUser" (User object) use hota hai
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
-            response.sendRedirect("login.jsp");
+        User loggedUser = (session != null) ? (User) session.getAttribute("loggedUser") : null;
+        if (loggedUser == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 

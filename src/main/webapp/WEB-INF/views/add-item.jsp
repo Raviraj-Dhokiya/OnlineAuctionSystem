@@ -9,7 +9,10 @@
 </head>
 <body>
 <nav class="navbar">
-  <div class="nav-brand">🏆 AuctionHub</div>
+  <div class="nav-brand">
+    <img src="https://thumbs.dreamstime.com/b/online-auction-gavel-internet-bidding-web-site-win-buy-item-d-words-wood-block-closing-website-42430139.jpg" alt="AuctionHub Logo" style="height:36px; width:36px; object-fit:cover; border-radius:8px; margin-right:8px; vertical-align:middle;">
+    AuctionHub
+  </div>
   <div class="nav-links">
     <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-ghost btn-sm">← Dashboard</a>
     <a href="${pageContext.request.contextPath}/LogoutServlet" class="btn btn-ghost btn-sm">Logout</a>
@@ -21,6 +24,12 @@
 
   <c:if test="${not empty error}">
     <div class="alert alert-error">${error}</div>
+  </c:if>
+  <c:if test="${not empty errorDetail}">
+    <div class="alert alert-error" style="font-size:0.88rem;">
+      <strong>Note:</strong> If listing fails, it may be due to a database storage limit on the free Oracle plan.
+      Try listing the item <strong>without an image</strong>, or use a smaller image (&lt;500KB).
+    </div>
   </c:if>
 
   <%-- multipart/form-data required for file upload (Unit 6) --%>
@@ -76,14 +85,14 @@
     <div class="form-group">
       <label>Item Images <small>(JPG/PNG, max 5 photos, max 2MB each)</small></label>
       <input type="file" name="itemImage" accept="image/*" multiple id="imageInput">
-      <small style="color:#666; display:block; margin-top:5px;">Pehli photo cover image banegi. Slider ke liye up to 5 chunein.</small>
+      <small style="color:#666; display:block; margin-top:5px;">First photo will be the cover image. Select up to 5 for the gallery slider.</small>
     </div>
 
     <!-- JS Limit enforcement -->
     <script>
       document.getElementById('imageInput').addEventListener('change', function(e) {
         if (this.files.length > 5) {
-          alert('Aap maximum 5 photos hi upload kar sakte hain!');
+          alert('You can upload a maximum of 5 photos!');
           this.value = ''; // clears the selection
         }
       });
