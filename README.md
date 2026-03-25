@@ -12,13 +12,14 @@ Welcome to the **Online Auction System**, a comprehensive web application built 
 
 ## 🛠️ Technologies Used
 
-- **Backend:** Java 11+, Java Servlets, JSP
-- **Database:** Oracle Database 21c XE, JDBC
+- **Backend:** Java 11+, Java Servlets, JSP, JSTL
+- **Database:** Oracle Database 21c XE, JDBC, Hibernate ORM, Apache DBCP2
 - **Networking:** TCP/UDP Sockets, Java RMI (Remote Method Invocation)
 - **Web Services & APIs:** REST API (Jersey JAX-RS), Java Mail API
-- **Build & Server:** Maven, Apache Tomcat 9.x
+- **Build & Server:** Maven, Apache Tomcat (Embedded plugin available)
 - **Frontend:** HTML5, CSS3, Vanilla JavaScript
 - **Security & Patterns:** BCrypt, Singleton, Factory, Observer, Decorator, Builder
+- **Libraries:** iText PDF (Exporting), Log4j, Commons FileUpload
 
 ---
 
@@ -34,7 +35,7 @@ OnlineAuctionSystem/
 └── src/main/
     ├── java/com/auction/
     │   ├── model/            # Data models (User, AuctionItem, Bid)
-    │   ├── dao/              # Database Access Objects (JDBC logic)
+    │   ├── dao/              # Database Access Objects (JDBC/Hibernate)
     │   ├── servlet/          # Controllers (Login, Dashboard, Bid)
     │   ├── filter/           # Authentication and Security filters
     │   ├── network/          # TCP/UDP Socket Servers
@@ -43,7 +44,8 @@ OnlineAuctionSystem/
     │   ├── webservice/       # RESTful API Endpoints
     │   ├── io/               # File I/O operations and Logs
     │   ├── security/         # Password hashing and Utils
-    │   └── patterns/         # Gang of Four Design Patterns
+    │   ├── patterns/         # Gang of Four Design Patterns
+    │   └── util/             # Utility classes and Database connections
     └── webapp/
         ├── css/              # Stylesheets
         ├── js/               # Client-side validation and live bidding
@@ -87,9 +89,9 @@ This project strictly follows the Advanced Java Technologies curriculum, featuri
 ### 1️⃣ Prerequisites
 Make sure you have installed the following software on your machine:
 - **Java JDK 11+**
-- **Apache Tomcat 9.x**
-- **Oracle Database XE 21c**
-- **Maven** Plugin
+- **Oracle Database XE 21c** (or compatible)
+- **Maven**
+- **Apache Tomcat 9.x** (optional, you can use the embedded maven plugin)
 
 ### 2️⃣ Database Setup
 1. Launch **Oracle XE** and connect via SQL Developer or SQL*Plus as SYSTEM.
@@ -110,14 +112,8 @@ set DB_USER=auction_user
 set DB_PASS=auction_pass
 ```
 
-### 4️⃣ Install Oracle JDBC manually
-Because Oracle constraints its JDBC driver via direct maven downloads, do a one-time configuration via CLI:
-```bat
-mvn install:install-file -Dfile=ojdbc8.jar -DgroupId=com.oracle -DartifactId=ojdbc8 -Dversion=19.3 -Dpackaging=jar
-```
-*(Alternative: You may place the `ojdbc8.jar` file manually inside Apache Tomcat's `lib` directory.)*
 
-### 5️⃣ Booting up Localhost (How to Run)
+### 4️⃣ Booting up Localhost (How to Run)
 The application comes with the Windows utility script meant to simplify boot processes!
 
 1. Open your terminal in the directory where `startApp.bat` and `pom.xml` reside.
