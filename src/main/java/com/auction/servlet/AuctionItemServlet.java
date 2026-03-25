@@ -154,15 +154,6 @@ public class AuctionItemServlet extends HttpServlet {
         HttpSession session = req.getSession(false);
         User seller = (User) session.getAttribute("loggedUser");
 
-        // BUG #4 FIX: CSRF token verify karo (one-time use)
-        String formToken = req.getParameter("csrfToken");
-        String sessToken = (String) session.getAttribute("csrfToken_addItem");
-        if (formToken == null || !formToken.equals(sessToken)) {
-            res.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token.");
-            return;
-        }
-        session.removeAttribute("csrfToken_addItem"); // one-time use — invalidate
-
         // ── Multipart form check ─────────────────────────────────────────────
         // Image upload ke liye form "multipart/form-data" hona chahiye
         if (!ServletFileUpload.isMultipartContent(req)) {
@@ -176,17 +167,38 @@ public class AuctionItemServlet extends HttpServlet {
         ServletFileUpload   upload  = new ServletFileUpload(factory);
         upload.setFileSizeMax(5 * 1024 * 1024L); // Max 5 MB image allow
 
-        // Naya AuctionItem object banao (isme saara data fill hoga)
-        AuctionItem item = new AuctionItem();
-        item.setSellerId(seller.getUserId()); // seller = current logged-in user
-
         try {
             // Form ke sab fields parse karo (text + file dono)
             List<FileItem> fileItems = upload.parseRequest(req);
 
+            // BUG #4 FIX: CSRF token verify karo (one-time use) - extracted from multipart
+            String formToken = null;
+            for (FileItem fi : fileItems) {
+                if (fi.isFormField() && "csrfToken".equals(fi.getFieldName())) {
+                    formToken = fi.getString();
+                    break;
+                }
+            }
+            String sessToken = (String) session.getAttribute("csrfToken_addItem");
+            if (formToken == null || !formToken.equals(sessToken)) {
+                res.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token.");
+                return;
+            }
+            session.removeAttribute("csrfToken_addItem"); // one-time use — invalidate
+
+            String title = "";
+            String description = "";
+            String category = "Other";
+            double startingPrice = 0.0;
+            double reservePrice = 0.0;
+            Timestamp endTime = null;
+
             java.util.List<byte[]> extraImageData = new java.util.ArrayList<>();
             java.util.List<String> extraImageNames = new java.util.ArrayList<>();
+            java.util.List<String> extraImageContentTypes = new java.util.ArrayList<>();
             byte[] primaryImageData = null;   // saved to local FS, NOT to DB BLOB
+            String primaryImageName = null;
+            String primaryImageContentType = null;
             boolean isFirstImage = true;
 
             for (FileItem fi : fileItems) {
@@ -195,25 +207,25 @@ public class AuctionItemServlet extends HttpServlet {
                     // ── Normal text field ─────────────────────────────────────
                     switch (fi.getFieldName()) {
                         case "title":
-                            item.setTitle(SecurityUtil.sanitizeInput(fi.getString()));
+                            title = SecurityUtil.sanitizeInput(fi.getString());
                             break;
                         case "description":
-                            item.setDescription(SecurityUtil.sanitizeInput(fi.getString()));
+                            description = SecurityUtil.sanitizeInput(fi.getString());
                             break;
                         case "category":
-                            item.setCategory(SecurityUtil.sanitizeInput(fi.getString()));
+                            category = SecurityUtil.sanitizeInput(fi.getString());
                             break;
                         case "startingPrice":
-                            item.setStartingPrice(Double.parseDouble(fi.getString()));
+                            startingPrice = Double.parseDouble(fi.getString());
                             break;
                         case "reservePrice":
                             String rp = fi.getString();
-                            if (!rp.isEmpty()) item.setReservePrice(Double.parseDouble(rp));
+                            if (!rp.isEmpty()) reservePrice = Double.parseDouble(rp);
                             break;
                         case "endTime":
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
                             Date endDate = sdf.parse(fi.getString());
-                            item.setEndTime(new Timestamp(endDate.getTime()));
+                            endTime = new Timestamp(endDate.getTime());
                             break;
                     }
                 } else {
@@ -240,13 +252,14 @@ public class AuctionItemServlet extends HttpServlet {
                         if (isFirstImage) {
                             // Store bytes locally (bypass DB quota). Flag imageName so card shows img tag.
                             primaryImageData = imageBytes;
-                            item.setImageName(sanitizedName); // name stored in DB, data saved to FS
-                            item.setImageData(null);          // never send BLOB to DB
+                            primaryImageContentType = contentType;
+                            primaryImageName = sanitizedName;
                             isFirstImage = false;
                         } else {
                             if (extraImageData.size() < 4) { // max 4 extra (total 5)
                                 extraImageData.add(imageBytes);
                                 extraImageNames.add(sanitizedName);
+                                extraImageContentTypes.add(contentType);
                             }
                         }
                     }
@@ -254,7 +267,31 @@ public class AuctionItemServlet extends HttpServlet {
             }
 
             // Start time = abhi
-            item.setStartTime(new Timestamp(System.currentTimeMillis()));
+            Timestamp startTime = new Timestamp(System.currentTimeMillis());
+
+            AuctionItem item = com.auction.patterns.AuctionItemFactory.createFromForm(
+                title, description, category, startingPrice, reservePrice,
+                seller.getUserId(), startTime, endTime
+            );
+            item.setImageName(primaryImageName);
+            item.setImageData(null);
+
+            // ── STORE BEFORE DB INSERT: Add Server-Side Validations ──
+            if (item.getTitle() == null || item.getTitle().trim().length() < 3) {
+                req.setAttribute("error", "Title must be at least 3 characters.");
+                req.getRequestDispatcher("/WEB-INF/views/add-item.jsp").forward(req, res);
+                return;
+            }
+            if (item.getEndTime() != null && item.getEndTime().before(new java.util.Date())) {
+                req.setAttribute("error", "End time must be in the future.");
+                req.getRequestDispatcher("/WEB-INF/views/add-item.jsp").forward(req, res);
+                return;
+            }
+            if (item.getStartingPrice() <= 0) {
+                req.setAttribute("error", "Starting price must be positive.");
+                req.getRequestDispatcher("/WEB-INF/views/add-item.jsp").forward(req, res);
+                return;
+            }
 
             // ── DB mein INSERT karo (with image, fallback without if quota exceeded) ─────
             int newItemId = itemDAO.addItem(item);
@@ -271,12 +308,24 @@ public class AuctionItemServlet extends HttpServlet {
 
                 // Save primary/cover image as item_X_0.jpg
                 if (primaryImageData != null) {
-                    java.io.File coverFile = new java.io.File(uploadPath, "item_" + newItemId + "_0.jpg");
+                    String ext = ".jpg"; // default
+                    if (primaryImageContentType != null) {
+                        if (primaryImageContentType.contains("png"))  ext = ".png";
+                        else if (primaryImageContentType.contains("gif"))  ext = ".gif";
+                        else if (primaryImageContentType.contains("webp")) ext = ".webp";
+                    }
+                    java.io.File coverFile = new java.io.File(uploadPath, "item_" + newItemId + "_0" + ext);
                     java.nio.file.Files.write(coverFile.toPath(), primaryImageData);
                 }
                 // Save extra gallery images as item_X_1.jpg, item_X_2.jpg, ...
                 for (int i = 0; i < extraImageData.size(); i++) {
-                    java.io.File file = new java.io.File(uploadPath, "item_" + newItemId + "_" + (i + 1) + ".jpg");
+                    String extFile = ".jpg"; // default
+                    if (extraImageContentTypes.get(i) != null) {
+                        if (extraImageContentTypes.get(i).contains("png"))  extFile = ".png";
+                        else if (extraImageContentTypes.get(i).contains("gif"))  extFile = ".gif";
+                        else if (extraImageContentTypes.get(i).contains("webp")) extFile = ".webp";
+                    }
+                    java.io.File file = new java.io.File(uploadPath, "item_" + newItemId + "_" + (i + 1) + extFile);
                     java.nio.file.Files.write(file.toPath(), extraImageData.get(i));
                 }
                 res.sendRedirect(req.getContextPath() + "/BidServlet?itemId=" + newItemId + "&success=listed");

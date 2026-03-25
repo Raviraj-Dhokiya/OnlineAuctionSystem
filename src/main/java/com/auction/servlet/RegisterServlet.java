@@ -62,8 +62,8 @@ public class RegisterServlet extends HttpServlet {
         String phone     = SecurityUtil.sanitizeInput(req.getParameter("phone"));
 
         // ── Validation 0: Phone compulsory ────────────────────────────────────
-        if (phone == null || phone.trim().isEmpty()) {
-            req.setAttribute("error", "Phone number is compulsory.");
+        if (phone == null || !phone.trim().matches("^[0-9]{10,15}$")) {
+            req.setAttribute("error", "Valid phone number required (10-15 digits).");
             req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, res);
             return;
         }

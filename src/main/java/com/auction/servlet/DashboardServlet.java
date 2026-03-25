@@ -56,11 +56,6 @@ public class DashboardServlet extends HttpServlet {
         // 1. Saari ACTIVE auctions
         List<com.auction.model.AuctionItem> activeItems = itemDAO.getActiveItems();
 
-        // 2. Har item ka bid count set karo (cards pe dikhane ke liye)
-        for (com.auction.model.AuctionItem item : activeItems) {
-            item.setBidCount(bidDAO.getBidCount(item.getItemId()));
-        }
-
         req.setAttribute("activeItems", activeItems);
 
         // 3. Is user ki apni sari bids

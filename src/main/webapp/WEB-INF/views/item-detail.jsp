@@ -451,6 +451,9 @@
     <c:if test="${param.error == 'bid_low'}">
       <div class="alert alert-error">Your bid must be higher than the current bid.</div>
     </c:if>
+    <c:if test="${param.error == 'own_item'}">
+      <div class="alert alert-error">You cannot bid on your own product.</div>
+    </c:if>
     <c:if test="${param.watchAdded == '1'}">
       <div class="alert alert-success">⭐ Item added to your watchlist!</div>
     </c:if>

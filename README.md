@@ -13,13 +13,13 @@ Welcome to the **Online Auction System**, a comprehensive web application built 
 ## 🛠️ Technologies Used
 
 - **Backend:** Java 11+, Java Servlets, JSP, JSTL
-- **Database:** Oracle Database 21c XE, JDBC, Hibernate ORM, Apache DBCP2
+- **Database:** Oracle Database 21c XE, Raw JDBC, Apache DBCP2 (Optimized)
 - **Networking:** TCP/UDP Sockets, Java RMI (Remote Method Invocation)
 - **Web Services & APIs:** REST API (Jersey JAX-RS), Java Mail API
 - **Build & Server:** Maven, Apache Tomcat (Embedded plugin available)
 - **Frontend:** HTML5, CSS3, Vanilla JavaScript
 - **Security & Patterns:** BCrypt, Singleton, Factory, Observer, Decorator, Builder
-- **Libraries:** iText PDF (Exporting), Log4j, Commons FileUpload
+- **Libraries & Tools:** iText PDF (Exporting), Apache Commons IO & FileUpload
 
 ---
 
@@ -81,6 +81,15 @@ This project strictly follows the Advanced Java Technologies curriculum, featuri
     * *Observer:* Broadcasting bid updates (`BidObserver`).
     * *Decorator:* Extending bids natively (`PremiumBidDecorator`).
     * *Builder:* Streamlining object creations without complex constructors.
+
+---
+
+## ✨ Recent Optimizations & Architectural Fixes
+* **N+1 Database Query Elimination**: Replaced loop-based database spamming over lists of active auctions with a highly efficient `LEFT JOIN` counting subquery inside `AuctionItemDAO`, solving crippling dashboard bottlenecks and eliminating `ORA-22848` CLOB compatibility issues.
+* **Efficient Memory Mapping (Logs)**: `AuctionLogger.java` utilizes `ReversedLinesFileReader` (Apache Commons IO) to sequentially read huge system logs backwards instead of loading the entire heavy footprint linearly into RAM row-by-row.
+* **REST & Backend Security Hardening**: Removed insecure endpoints blindly trusting API JSON request bodies originally inside `AuctionRestAPI.java`, now strictly authenticating and verifying session IDs across the separated `BidRestAPI.java` and `WinnerRestAPI.java` files. Prevented sellers natively from legally bidding on their own product lists (`BidServlet.java`).
+* **Factory Deployment & Rigorous Validation**: Fully leveraged `AuctionItemFactory.java` mapping inside `AuctionItemServlet.java` reducing redundant processing. Enforced server-side checks rejecting weak listings logically and cleanly bypassed 403 Forbidden issues during picture uploads by unwrapping `csrfToken` correctly out of `multipart/form-data` chunks.
+* **Dependency & Codebase Purge**: Terminated massive unused `hibernate-core` and legacy `log4j-core` plugins from the `pom.xml`, drastically reducing final `.war` compiler bloat. Scrubbed defunct mail/observer mock code keeping the overall design logic slim and impressive!
 
 ---
 

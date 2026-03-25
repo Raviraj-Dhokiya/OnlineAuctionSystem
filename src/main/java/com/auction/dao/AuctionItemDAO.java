@@ -170,8 +170,12 @@ public class AuctionItemDAO {
         String sql = "SELECT i.item_id, i.title, i.description, i.category, " +
                      "i.starting_price, i.current_price, i.reserve_price, " +
                      "i.image_name, i.seller_id, i.status, i.start_time, i.end_time, " +
-                     "i.created_at, u.username AS seller_name " +
-                     "FROM auction_items i JOIN users u ON i.seller_id = u.user_id " +
+                     "i.created_at, u.username AS seller_name, " +
+                     "NVL(bc.b_count, 0) AS bid_count " +
+                     "FROM auction_items i " +
+                     "JOIN users u ON i.seller_id = u.user_id " +
+                     "LEFT JOIN (SELECT item_id, COUNT(bid_id) AS b_count FROM bids GROUP BY item_id) bc " +
+                     "ON i.item_id = bc.item_id " +
                      "WHERE i.status = 'ACTIVE' AND i.end_time > CURRENT_TIMESTAMP " +
                      "ORDER BY i.end_time ASC";
         return queryItems(sql);
@@ -483,6 +487,10 @@ public class AuctionItemDAO {
 
         // Joined field
         try { item.setSellerName(rs.getString("seller_name")); }
+        catch (Exception ignored) {}
+        
+        // Joined field for bid_count
+        try { item.setBidCount(rs.getInt("bid_count")); }
         catch (Exception ignored) {}
 
         return item;

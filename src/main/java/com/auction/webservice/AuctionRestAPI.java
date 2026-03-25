@@ -7,6 +7,8 @@ import com.auction.model.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -79,81 +81,5 @@ public class AuctionRestAPI {
                            .entity("{\"error\":\"Query required\"}").build();
         List<AuctionItem> items = itemDAO.searchItems(keyword);
         return Response.ok(items).build();
-    }
-}
-
-/**
- * BidRestAPI - Unit 7 (REST POST endpoint)
- */
-@Path("/bids")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-class BidRestAPI {
-
-    private final BidDAO bidDAO = new BidDAO();
-
-    /**
-     * POST /api/bids
-     * Body: {"itemId":1, "bidderId":2, "bidAmount":500.00}
-     */
-    @POST
-    public Response placeBid(BidRequest request) {
-        if (request == null || request.getItemId() <= 0 ||
-            request.getBidderId() <= 0 || request.getBidAmount() <= 0) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                           .entity("{\"error\":\"Invalid bid data\"}").build();
-        }
-
-        Bid bid = new Bid(request.getItemId(),
-                          request.getBidderId(),
-                          request.getBidAmount());
-        boolean success = bidDAO.placeBid(bid);
-
-        if (success) {
-            return Response.status(Response.Status.CREATED)
-                           .entity("{\"status\":\"Bid placed successfully\"}").build();
-        } else {
-            return Response.status(Response.Status.CONFLICT)
-                           .entity("{\"error\":\"Bid too low or auction closed\"}").build();
-        }
-    }
-
-    // ── Inner DTO for bid request ────────────────────────────────────────────
-    public static class BidRequest {
-        private int    itemId;
-        private int    bidderId;
-        private double bidAmount;
-
-        public int    getItemId()             { return itemId; }
-        public void   setItemId(int i)        { this.itemId = i; }
-        public int    getBidderId()           { return bidderId; }
-        public void   setBidderId(int b)      { this.bidderId = b; }
-        public double getBidAmount()          { return bidAmount; }
-        public void   setBidAmount(double a)  { this.bidAmount = a; }
-    }
-}
-
-/**
- * WinnerRestAPI - Unit 7 (REST)
- */
-@Path("/winners")
-@Produces(MediaType.APPLICATION_JSON)
-class WinnerRestAPI {
-
-    private final WinnerDAO winnerDAO = new WinnerDAO();
-
-    @GET
-    public Response getAllWinners() {
-        return Response.ok(winnerDAO.getAllWinners()).build();
-    }
-
-    @GET
-    @Path("/item/{id}")
-    public Response getWinnerForItem(@PathParam("id") int itemId) {
-        Winner w = winnerDAO.getWinnerByItem(itemId);
-        if (w == null)
-            return Response.status(Response.Status.NOT_FOUND)
-                           .entity("{\"error\":\"No winner yet\"}").build();
-        return Response.ok(w).build();
     }
 }

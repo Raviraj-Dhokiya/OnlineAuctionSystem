@@ -89,17 +89,8 @@ class EmailNotificationObserver implements BidObserver {
 
     @Override
     public void onBidPlaced(Bid bid, AuctionItem item) {
-        // Real implementation: AuctionMailService.sendOutbidEmail() call karo
-        // Previously outbid user ko alert bhejo
         System.out.println("[EmailObserver] Would send outbid email for item: " +
                            item.getTitle() + " | New bid: ₹" + bid.getBidAmount());
-
-        // Actual call (uncomment when mail credentials are configured):
-        // String prevBidderEmail = bidDAO.getPreviousHighBidderEmail(item.getItemId());
-        // if (prevBidderEmail != null) {
-        //     AuctionMailService.sendOutbidEmail(prevBidderEmail, "Bidder",
-        //                                       item.getTitle(), bid.getBidAmount());
-        // }
     }
 }
 

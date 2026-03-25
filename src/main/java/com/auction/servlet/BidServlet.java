@@ -164,6 +164,12 @@ public class BidServlet extends HttpServlet {
             return;
         }
 
+        com.auction.model.AuctionItem auctionItem = itemDAO.findById(itemId);
+        if (auctionItem != null && auctionItem.getSellerId() == loggedUser.getUserId()) {
+            res.sendRedirect(req.getContextPath() + "/BidServlet?itemId=" + itemId + "&error=own_item");
+            return;
+        }
+
         // ── Bid Place karo (DB Transaction) ──────────────────────────────────
         // BidDAO.placeBid() internally:
         // 1. SELECT FOR UPDATE → row lock (race condition fix)

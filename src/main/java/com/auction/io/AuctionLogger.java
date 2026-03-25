@@ -23,8 +23,6 @@ public class AuctionLogger {
     private static final String LOG_DIR  = System.getProperty("user.home") +
                                            File.separator + "auction_logs";
     private static final String LOG_FILE = LOG_DIR + File.separator + "auction.log";
-    private static final SimpleDateFormat SDF =
-        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     // Thread-safe Async Logging Queue (Background writing ke liye)
     // Jab kisi ko log likhna hota hai, wo direct file access karne ke bajaye message yahan (queue mein) dalta hai.
@@ -60,7 +58,7 @@ public class AuctionLogger {
      * Add log entry to queue (non-blocking for callers)
      */
     public static void log(String message) {
-        String entry = "[" + SDF.format(new Date()) + "] " + message;
+        String entry = "[" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "] " + message;
         logQueue.offer(entry);
         System.out.println("[AuctionLog] " + entry);
     }
@@ -81,29 +79,24 @@ public class AuctionLogger {
     }
 
     /**
-     * Read last N lines from log file using Byte-based Stream (Unit 2)
-     * FileInputStream (byte stream) -> InputStreamReader -> BufferedReader
+     * Read last N lines from log file efficiently by reading from the end.
      */
     public static List<String> readLastNLines(int n) {
         List<String> lines = new ArrayList<>();
         File logFile = new File(LOG_FILE);
-        if (!logFile.exists()) return lines;
+        if (!logFile.exists() || n <= 0) return lines;
 
-        // Using byte-based stream (Unit 2 - Byte-based Streams)
-        try (FileInputStream fis   = new FileInputStream(logFile);
-             InputStreamReader isr = new InputStreamReader(fis);
-             BufferedReader br     = new BufferedReader(isr)) {
-
+        try (org.apache.commons.io.input.ReversedLinesFileReader reader = 
+             new org.apache.commons.io.input.ReversedLinesFileReader(logFile, java.nio.charset.StandardCharsets.UTF_8)) {
             String line;
-            while ((line = br.readLine()) != null) lines.add(line);
-
-        } catch (IOException e) {
+            while ((line = reader.readLine()) != null && lines.size() < n) {
+                lines.add(0, line); // Add to beginning to keep chronological order
+            }
+        } catch (Exception e) {
             System.err.println("[Logger] Read error: " + e.getMessage());
         }
 
-        // Return only last n lines
-        int start = Math.max(0, lines.size() - n);
-        return lines.subList(start, lines.size());
+        return lines;
     }
 
     /**
