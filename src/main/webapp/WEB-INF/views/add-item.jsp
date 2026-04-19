@@ -15,7 +15,7 @@
   </div>
   <div class="nav-links">
     <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-ghost btn-sm">← Dashboard</a>
-    <a href="${pageContext.request.contextPath}/LogoutServlet" class="btn btn-ghost btn-sm">Logout</a>
+    <a href="${pageContext.request.contextPath}/LogoutServlet" class="btn btn-ghost btn-sm">🚪 Logout</a>
   </div>
 </nav>
 
@@ -40,17 +40,17 @@
     <input type="hidden" name="csrfToken" value="${csrfToken}">
 
     <div class="form-group">
-      <label>Item Title *</label>
+      <label>🏷️ Item Title *</label>
       <input type="text" name="title" placeholder="e.g. Vintage Guitar 1965" required>
     </div>
     <div class="form-group">
-      <label>Description</label>
+      <label>📝 Description</label>
       <textarea name="description" rows="4"
                 placeholder="Describe your item..."></textarea>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>Category *</label>
+        <label>📂 Category *</label>
         <select name="category" required>
           <option value="">-- Select --</option>
           <option>Electronics</option>
@@ -59,34 +59,34 @@
           <option>Furniture</option>
           <option>Collectibles</option>
           <option>Music</option>
-          <option>Fashion & Accessories</option>
+          <option>Fashion &amp; Accessories</option>
           <option>Real Estate</option>
           <option>Home Appliances</option>
-          <option>Sports & Outdoors</option>
-          <option>Toys & Hobbies</option>
-          <option>Jewelry & Watches</option>
+          <option>Sports &amp; Outdoors</option>
+          <option>Toys &amp; Hobbies</option>
+          <option>Jewelry &amp; Watches</option>
           <option>Antiques</option>
-          <option>Books & Comics</option>
+          <option>Books &amp; Comics</option>
           <option>Other</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Starting Price (₹) *</label>
+        <label>💰 Starting Price (₹) *</label>
         <input type="number" name="startingPrice" min="1" step="0.01" required>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>Reserve Price (₹) <small>(optional)</small></label>
+        <label>💵 Reserve Price (₹) <small>(optional)</small></label>
         <input type="number" name="reservePrice" min="0" step="0.01">
       </div>
       <div class="form-group">
-        <label>Auction End Date & Time *</label>
+        <label>⏰ Auction End Date &amp; Time *</label>
         <input type="datetime-local" name="endTime" required>
       </div>
     </div>
     <div class="form-group">
-      <label>Item Images <small>(JPG/PNG, max 5 photos, max 2MB each)</small></label>
+      <label>📷 Item Images <small>(JPG/PNG, max 5 photos, max 2MB each)</small></label>
       <input type="file" name="itemImage" accept="image/*" multiple id="imageInput">
       <small style="color:#666; display:block; margin-top:5px;">First photo will be the cover image. Select up to 5 for the gallery slider.</small>
     </div>
@@ -101,7 +101,7 @@
       });
     </script>
 
-    <button type="submit" class="btn btn-primary btn-full">List Item for Auction</button>
+    <button type="submit" class="btn btn-primary btn-full">🏷️ List Item for Auction</button>
   </form>
 </div>
 </body>

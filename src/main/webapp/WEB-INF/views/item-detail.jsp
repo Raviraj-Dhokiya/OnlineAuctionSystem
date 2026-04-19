@@ -6,10 +6,10 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>${item.title} — Auction System</title>
+  <title>${item.title} â€” Auction System</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
   <style>
-    /* ── Chat UI Styles ─────────────────────────────────────────────────── */
+    /* â”€â”€ Chat UI Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .chat-section {
       margin-top: 2rem;
       background: #fff;
@@ -157,7 +157,7 @@
       display: none;
     }
 
-    /* ── Watchlist Button ───────────────────────────────────────────────── */
+    /* â”€â”€ Watchlist Button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .watchlist-btn {
       display: inline-flex;
       align-items: center;
@@ -188,7 +188,7 @@
       background: #e8e4ff;
     }
 
-    /* ── Min Bid Suggestion ─────────────────────────────────────────────── */
+    /* â”€â”€ Min Bid Suggestion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .min-bid-hint {
       background: #eef3ff;
       border: 1.5px solid #b0c4ff;
@@ -203,7 +203,7 @@
     }
     .min-bid-hint strong { color: #1a32a0; font-size: 1rem; }
 
-    /* ── Time Extension Notice ──────────────────────────────────────────── */
+    /* â”€â”€ Time Extension Notice â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .extension-notice {
       background: #fff8e1;
       border: 1.5px solid #ffe082;
@@ -215,9 +215,9 @@
       line-height: 1.5;
     }
 
-    /* ══════════════════════════════════════════════════════════════
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        AUTO BID STYLES
-    ══════════════════════════════════════════════════════════════ */
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     .auto-bid-section {
       margin-top: 1rem;
       border-top: 1.5px dashed #d0c9ff;
@@ -374,6 +374,7 @@
       transition: opacity 0.2s;
     }
     .modal-footer .btn-confirm:hover { opacity:0.88; }
+
     .modal-footer .btn-close-modal {
       padding: 0.65rem 1.1rem;
       border-radius: 9px;
@@ -425,18 +426,18 @@
     .auto-bid-toast.error   { border-left: 4px solid #ef4444; }
     .auto-bid-toast.info    { border-left: 4px solid #6c63ff; }
   </style>
+
 </head>
 
 <body>
 
   <nav class="navbar">
     <div class="nav-brand">
-      <img src="https://thumbs.dreamstime.com/b/online-auction-gavel-internet-bidding-web-site-win-buy-item-d-words-wood-block-closing-website-42430139.jpg" alt="AuctionHub Logo" style="height:36px; width:36px; object-fit:cover; border-radius:8px; margin-right:8px; vertical-align:middle;">
       AuctionHub
     </div>
     <div class="nav-links">
-      <a href="${pageContext.request.contextPath}/DashboardServlet"   class="btn btn-ghost btn-sm">← Back</a>
-      <a href="${pageContext.request.contextPath}/WatchlistServlet"   class="btn btn-ghost btn-sm">⭐ Watchlist</a>
+      <a href="${pageContext.request.contextPath}/DashboardServlet"   class="btn btn-ghost btn-sm">â†  Back</a>
+      <a href="${pageContext.request.contextPath}/WatchlistServlet"   class="btn btn-ghost btn-sm">â­  Watchlist</a>
       <span>Welcome, <strong>${sessionScope.username}</strong></span>
       <a href="${pageContext.request.contextPath}/LogoutServlet"      class="btn btn-ghost btn-sm">Logout</a>
     </div>
@@ -446,7 +447,7 @@
 
     <%-- Alerts --%>
     <c:if test="${param.success == '1'}">
-      <div class="alert alert-success">✓ Your bid was placed successfully!</div>
+      <div class="alert alert-success">âœ“ Your bid was placed successfully!</div>
     </c:if>
     <c:if test="${param.error == 'bid_low'}">
       <div class="alert alert-error">Your bid must be higher than the current bid.</div>
@@ -455,7 +456,7 @@
       <div class="alert alert-error">You cannot bid on your own product.</div>
     </c:if>
     <c:if test="${param.watchAdded == '1'}">
-      <div class="alert alert-success">⭐ Item added to your watchlist!</div>
+      <div class="alert alert-success">â­ Item added to your watchlist!</div>
     </c:if>
     <c:if test="${param.watchRemoved == '1'}">
       <div class="alert alert-success">Removed from watchlist.</div>
@@ -470,7 +471,7 @@
              onerror="this.style.display='none'; document.getElementById('mainImgPlaceholder').style.display='flex';"
              onload="document.getElementById('mainImgPlaceholder').style.display='none'; this.style.display='';"
         >
-        <div id="mainImgPlaceholder" class="item-detail-img-placeholder" style="display:none;">📦</div>
+        <div id="mainImgPlaceholder" class="item-detail-img-placeholder" style="display:none;">&#x1F4E6;</div>
 
         <%-- MULTI-IMAGE GALLERY (Added) --%>
         <div class="item-gallery" style="display:flex; gap:10px; margin-top:15px; margin-bottom:20px; overflow-x:auto;" id="galleryStrip">
@@ -501,13 +502,13 @@
             <c:when test="${isWatching}">
               <a href="${pageContext.request.contextPath}/WatchlistServlet?action=remove&itemId=${item.itemId}&ref=item"
                  class="watchlist-btn watching">
-                ⭐ Watching — Click to Remove
+                &#11088; Watching &mdash; Click to Remove
               </a>
             </c:when>
             <c:otherwise>
               <a href="${pageContext.request.contextPath}/WatchlistServlet?action=add&itemId=${item.itemId}"
                  class="watchlist-btn not-watching">
-                ☆ Add to Watchlist
+                &#9733; Add to Watchlist
               </a>
             </c:otherwise>
           </c:choose>
@@ -515,12 +516,12 @@
           <div class="price-section">
             <div class="price-box">
               <span class="label">Starting Price</span>
-              <span class="value">₹<fmt:formatNumber value="${item.startingPrice}" pattern="#,##0.00"/></span>
+              <span class="value">&#8377;<fmt:formatNumber value="${item.startingPrice}" pattern="#,##0.00"/></span>
             </div>
             <div class="price-box highlight">
               <span class="label">Current Highest Bid</span>
               <span class="value" id="current-price">
-                ₹<fmt:formatNumber value="${item.currentPrice}" pattern="#,##0.00"/>
+                &#8377;<fmt:formatNumber value="${item.currentPrice}" pattern="#,##0.00"/>
               </span>
             </div>
             <div class="price-box">
@@ -539,7 +540,7 @@
           <%-- Time Extension Notice --%>
           <c:if test="${item.status == 'ACTIVE'}">
             <div class="extension-notice">
-              ⏱️ <strong>Auto-Extension Rule:</strong> If a bid is placed in the last 2 minutes,
+              &#x23F1; <strong>Auto-Extension Rule:</strong> If a bid is placed in the last 2 minutes,
               the auction automatically extends by <strong>5 minutes</strong>.
             </div>
           </c:if>
@@ -557,8 +558,8 @@
               <%-- Minimum Bid Suggestion --%>
               <c:if test="${not empty minNextBid}">
                 <div class="min-bid-hint">
-                  💡 Minimum next bid:
-                  <strong>₹<fmt:formatNumber value="${minNextBid}" pattern="#,##0.00"/></strong>
+                  &#x1F4A1; Minimum next bid:
+                  <strong>&#8377;<fmt:formatNumber value="${minNextBid}" pattern="#,##0.00"/></strong>
                   &nbsp;(current + 5%)
                 </div>
               </c:if>
@@ -567,40 +568,40 @@
                 <input type="hidden" name="itemId"    value="${item.itemId}">
                 <input type="hidden" name="csrfToken" value="${csrfToken}">
                 <div class="form-group">
-                  <label>Your Bid Amount (₹)</label>
+                  <label>Your Bid Amount (&#8377;)</label>
                   <input type="number" name="bidAmount"
                          min="${minNextBid}"
                          step="1"
-                         placeholder="Min: ₹${minNextBid}" required
+                         placeholder="Min: &#8377;${minNextBid}" required
                          id="bidAmountInput">
                 </div>
-                <button type="submit" class="btn btn-primary btn-full">Place Bid 🔨</button>
+                <button type="submit" class="btn btn-primary btn-full">&#x1F528; Place Bid</button>
               </form>
 
-              <%-- ═══════════════════════ AUTO BID SECTION ═══════════════════════ --%>
+              <%-- AUTO BID SECTION --%>
               <div class="auto-bid-section" id="auto-bid-section">
 
                 <%-- Active Status Bar (hidden by default, JS se dikhega) --%>
                 <div class="auto-bid-status-bar" id="auto-bid-status-bar" style="display:none;">
                   <div class="auto-bid-dot"></div>
-                  🤖 Auto Bid Active &mdash; Target: <span id="ab-target-display">&#8377;0</span>
+                  &#x1F916; Auto Bid Active &mdash; Target: <span id="ab-target-display">&#8377;0</span>
                 </div>
 
                 <%-- Countdown timer (30 sec) --%>
                 <div class="auto-bid-timer" id="auto-bid-timer">
-                  ⏳ Auto bid in <strong><span id="ab-countdown">30</span>s</strong>...
+                  &#x23F3; Auto bid in <strong><span id="ab-countdown">30</span>s</strong>...
                 </div>
 
                 <%-- Enable Button --%>
                 <button class="btn-auto-bid-enable" id="btn-enable-auto-bid"
                         onclick="openAutoBidModal()" style="display:inline-flex;">
-                  🤖 Enable Auto Bid
+                  &#x1F916; Enable Auto Bid
                 </button>
 
                 <%-- Cancel Button --%>
                 <button class="btn-auto-bid-cancel" id="btn-cancel-auto-bid"
                         style="display:none;" onclick="cancelAutoBid()">
-                  ✕ Disable Auto Bid
+                  &#x2715; Disable Auto Bid
                 </button>
 
               </div><%-- /auto-bid-section --%>
@@ -608,9 +609,9 @@
           </c:when>
           <c:when test="${not empty winner}">
             <div class="winner-box">
-              <h3>🏆 Auction Ended</h3>
+              <h3>&#x1F3C6; Auction Ended</h3>
               <p>Winner: <strong>${winner.winnerName}</strong></p>
-              <p>Winning Bid: <strong>₹<fmt:formatNumber value="${winner.winningAmount}" pattern="#,##0.00"/></strong></p>
+              <p>Winning Bid: <strong>&#8377;<fmt:formatNumber value="${winner.winningAmount}" pattern="#,##0.00"/></strong></p>
             </div>
           </c:when>
           <c:otherwise>
@@ -624,7 +625,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; margin-bottom:10px;">
           <h3 style="margin:0;">Bid History</h3>
           <a href="${pageContext.request.contextPath}/DownloadBidsPdfServlet?itemId=${item.itemId}" 
-             class="btn btn-outline btn-sm">📄 Download PDF</a>
+             class="btn btn-outline btn-sm">&#x1F4C4; Download PDF</a>
         </div>
         <p class="empty-msg" id="empty-bids-msg" style="${empty bids ? 'display:block;' : 'display:none;'}">No bids yet. Be the first!</p>
         
@@ -632,14 +633,14 @@
           <thead>
             <tr>
               <th>Bidder</th>
-              <th>Amount (₹)</th>
+              <th>Amount (&#8377;)</th>
               <th>Time</th>
             </tr>
           </thead>
           <tbody id="bid-history-body">
             <c:forEach var="bid" items="${bids}">
               <tr class="${bid.winning ? 'row-highlight' : ''}">
-                <td>${bid.bidderName} <c:if test="${bid.winning}">👑</c:if></td>
+                <td>${bid.bidderName} <c:if test="${bid.winning}">&#x1F451;</c:if></td>
                 <td><fmt:formatNumber value="${bid.bidAmount}" pattern="#,##0.00"/></td>
                 <td><fmt:formatDate value="${bid.bidTime}" pattern="dd MMM HH:mm:ss"/></td>
               </tr>
@@ -647,17 +648,15 @@
           </tbody>
         </table>
 
-        <%-- ═══════════════════════════════════════════════════════
-             LIVE CHAT (Socket-based — AuctionChatServer port 9092)
-             ═══════════════════════════════════════════════════════ --%>
+        <%-- LIVE CHAT (Socket-based &mdash; AuctionChatServer port 9092) --%>
         <div class="chat-section">
           <div class="chat-header">
             <div class="chat-status-dot" id="chat-dot"></div>
-            💬 Live Auction Chat
+            &#x1F4AC; Live Auction Chat
             <span id="chat-status-label" style="font-size:0.75rem; color:#64748b; margin-left:auto;">Connecting...</span>
           </div>
           <div id="chat-reconnect-bar" class="chat-reconnect-bar">
-            ⚠️ Chat disconnected. Reconnecting...
+            &#x26A0; Chat disconnected. Reconnecting...
           </div>
           <div class="chat-messages" id="chat-messages">
             <div class="chat-msg system-msg">
@@ -677,16 +676,16 @@
 
   <div id="notif-bar" class="notif-bar" style="display:none;"></div>
 
-  <%-- ══════════════════════════════════════════════════════════
+  <%-- ═══════════════════════════════════════════════════════════ 
        AUTO BID MODAL
-  ══════════════════════════════════════════════════════════ --%>
+  ═══════════════════════════════════════════════════════════ --%>
   <div class="auto-bid-overlay" id="auto-bid-overlay" onclick="overlayClickClose(event)">
     <div class="auto-bid-modal">
-      <h3>🤖 Auto Bid Setup</h3>
+      <h3>&#x1F916; Auto Bid Setup</h3>
       <p class="modal-sub">Auto bid fires automatically 30 seconds after someone else outbids you.</p>
 
       <div class="info-row">
-        📌 <strong>How it works:</strong><br>
+        &#x1F4CC; <strong>How it works:</strong><br>
         &bull; Auto bid triggers <strong>30 seconds</strong> after another user's bid<br>
         &bull; Bid amount = Current Price + <strong>10%</strong><br>
         &bull; If auto bid amount exceeds your target, auto bid <strong>stops</strong> automatically
@@ -696,7 +695,7 @@
         Current Highest Bid: <strong id="ab-modal-current-price">&#8377;0</strong>
       </div>
 
-      <label for="ab-max-target-input">🎯 Maximum Target Price (&#8377;)</label>
+      <label for="ab-max-target-input">&#x1F3AF; Maximum Target Price (&#8377;)</label>
       <input type="number" id="ab-max-target-input"
              placeholder="e.g. 10000" min="1" step="1">
       <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.3rem;">
@@ -836,7 +835,7 @@
     window.addEventListener('beforeunload', function() { clearInterval(pollTimer); });
   </script>
 
-  <%-- itemId global — required by bid-live.js for poll filtering + auto bid hook --%>
+  <%-- itemId global â€” required by bid-live.js for poll filtering + auto bid hook --%>
   <script>
     var itemId = parseInt('${item.itemId}', 10);
   </script>
@@ -844,7 +843,7 @@
   <script src="${pageContext.request.contextPath}/js/bid-live.js"></script>
 
   <script>
-    // ── AUTO BID JAVASCRIPT ───────────────────────────────────────────────────
+    // â”€â”€ AUTO BID JAVASCRIPT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     var AB_ITEM_ID   = parseInt('${item.itemId}', 10);
     var AB_CTX       = '${pageContext.request.contextPath}';
@@ -858,7 +857,7 @@
     var abProcessing     = false;
     var abToastTimer     = null;
 
-    // ── On page load: check if auto bid is already active ────────────────────
+    // â”€â”€ On page load: check if auto bid is already active â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     window.addEventListener('load', function() {
       fetch(AB_CTX + '/AutoBidServlet?itemId=' + AB_ITEM_ID)
         .then(function(r) { return r.json(); })
@@ -873,7 +872,7 @@
     });
 
 
-    // ── Show auto bid ACTIVE state ────────────────────────────────────────────
+    // â”€â”€ Show auto bid ACTIVE state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function showAutoBidActive() {
       document.getElementById('auto-bid-status-bar').style.display = 'flex';
       document.getElementById('ab-target-display').textContent =
@@ -882,7 +881,7 @@
       document.getElementById('btn-cancel-auto-bid').style.display = 'inline-flex';
     }
 
-    // ── Show auto bid INACTIVE state ──────────────────────────────────────────
+    // â”€â”€ Show auto bid INACTIVE state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function showAutoBidInactive() {
       abActive = false;
       document.getElementById('auto-bid-status-bar').style.display = 'none';
@@ -891,7 +890,7 @@
       stopAutoBidCountdown();
     }
 
-    // ── MODAL: open ───────────────────────────────────────────────────────────
+    // â”€â”€ MODAL: open â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function openAutoBidModal() {
       var priceEl   = document.getElementById('current-price');
       var priceText = priceEl ? priceEl.textContent.trim() : String.fromCharCode(8377) + '0';
@@ -902,7 +901,7 @@
       }, 200);
     }
 
-    // ── MODAL: close ──────────────────────────────────────────────────────────
+    // â”€â”€ MODAL: close â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function closeAutoBidModal() {
       document.getElementById('auto-bid-overlay').classList.remove('open');
       document.getElementById('ab-max-target-input').value = '';
@@ -914,7 +913,7 @@
       }
     }
 
-    // ── CONFIRM: Enable Auto Bid ──────────────────────────────────────────────
+    // â”€â”€ CONFIRM: Enable Auto Bid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function confirmAutoBid() {
       var inp       = document.getElementById('ab-max-target-input');
       var targetVal = parseFloat(inp.value);
@@ -955,7 +954,7 @@
       });
     }
 
-    // ── CANCEL Auto Bid ───────────────────────────────────────────────────────
+    // â”€â”€ CANCEL Auto Bid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function cancelAutoBid() {
       fetch(AB_CTX + '/AutoBidServlet', {
         method:  'POST',
@@ -972,7 +971,7 @@
       });
     }
 
-    // ── 30-Second Countdown ───────────────────────────────────────────────────
+    // â”€â”€ 30-Second Countdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function startAutoBidCountdown(bidderName) {
       if (!abActive)                  return; // auto bid is off
       if (bidderName === AB_MY_USER)  return; // I placed the bid, skip
@@ -1006,7 +1005,7 @@
       if (timerEl) timerEl.classList.remove('visible');
     }
 
-    // ── TRIGGER Auto Bid on server ────────────────────────────────────────────
+    // â”€â”€ TRIGGER Auto Bid on server â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function triggerAutoBid() {
       if (!abActive) return;
 
@@ -1052,14 +1051,14 @@
       });
     }
 
-    // ── Hook: called by bid-live.js when a new bid is detected ───────────────
+    // â”€â”€ Hook: called by bid-live.js when a new bid is detected â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     window.onNewBidDetected = function(bidderName, amount) {
       if (abActive && bidderName !== AB_MY_USER) {
         startAutoBidCountdown(bidderName);
       }
     };
 
-    // ── Toast ─────────────────────────────────────────────────────────────────
+    // â”€â”€ Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function showAutoBidToast(msg, type) {
       var toast = document.getElementById('auto-bid-toast');
       if (!toast) return;
@@ -1071,7 +1070,7 @@
       }, 4500);
     }
 
-    // ── ESC closes modal ──────────────────────────────────────────────────────
+    // â”€â”€ ESC closes modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') closeAutoBidModal();
     });

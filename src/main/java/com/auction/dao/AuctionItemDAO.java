@@ -216,8 +216,11 @@ public class AuctionItemDAO {
         String sql = "SELECT i.item_id, i.title, i.description, i.category, " +
                      "i.starting_price, i.current_price, i.reserve_price, " +
                      "i.image_name, i.seller_id, i.status, i.start_time, i.end_time, " +
-                     "i.created_at, u.username AS seller_name " +
+                     "i.created_at, u.username AS seller_name, " +
+                     "NVL(bc.b_count, 0) AS bid_count " +
                      "FROM auction_items i JOIN users u ON i.seller_id = u.user_id " +
+                     "LEFT JOIN (SELECT item_id, COUNT(bid_id) AS b_count FROM bids GROUP BY item_id) bc " +
+                     "ON i.item_id = bc.item_id " +
                      "ORDER BY i.created_at DESC";
         return queryItems(sql);
     }
@@ -420,6 +423,23 @@ public class AuctionItemDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("[AuctionItemDAO] updateStatus error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * deleteItem() — Admin: auction item ko permanently delete karo.
+     * Note: Caller should first delete winners and bids for this item.
+     * @return true = deleted, false = not found or error
+     */
+    public boolean deleteItem(int itemId) {
+        String sql = "DELETE FROM auction_items WHERE item_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, itemId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("[AuctionItemDAO] deleteItem error: " + e.getMessage());
             return false;
         }
     }

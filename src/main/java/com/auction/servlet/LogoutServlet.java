@@ -36,12 +36,20 @@ public class LogoutServlet extends HttpServlet {
         // Existing session lo (false = naya session mat banao)
         HttpSession session = req.getSession(false);
 
+        // Admin session tha kya? — invalidate karne se pehle check karo
+        boolean wasAdmin = (session != null &&
+                            Boolean.TRUE.equals(session.getAttribute("adminLoggedIn")));
+
         if (session != null) {
-            // Session exist karti hai → sab data mita do (loggedUser, role etc.)
+            // Session exist karti hai → sab data mita do (loggedUser, role, adminLoggedIn etc.)
             session.invalidate();
         }
 
-        // Login page par redirect karo
-        res.sendRedirect(req.getContextPath() + "/LoginServlet");
+        // Admin logout → AdminLoginServlet, normal user → LoginServlet
+        if (wasAdmin) {
+            res.sendRedirect(req.getContextPath() + "/AdminLoginServlet");
+        } else {
+            res.sendRedirect(req.getContextPath() + "/LoginServlet");
+        }
     }
 }

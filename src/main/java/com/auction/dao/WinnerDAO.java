@@ -113,6 +113,22 @@ public class WinnerDAO {
         }
     }
 
+    /**
+     * Delete winners record for a specific item — used before deleting an item
+     */
+    public boolean deleteWinnersForItem(int itemId) {
+        String sql = "DELETE FROM winners WHERE item_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, itemId);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("[WinnerDAO] deleteWinnersForItem error: " + e.getMessage());
+            return false;
+        }
+    }
+
     // ── HELPER ───────────────────────────────────────────────────────────────
 
     private Winner mapWinner(ResultSet rs) throws SQLException {

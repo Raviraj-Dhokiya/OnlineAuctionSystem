@@ -39,6 +39,7 @@ public class AuthFilter implements Filter {
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
         "/LoginServlet",
         "/RegisterServlet",
+        "/AdminLoginServlet",
         "/index.jsp",
         "/css/",
         "/js/",
@@ -78,8 +79,25 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        // Private page hai → session check karo
-        // getSession(false) → false matlab: naya session mat banao, sirf check karo
+        // ── ADMIN pages: sirf adminLoggedIn check karo (loggedUser ki zarurat nahi) ──
+        // AdminLoginServlet → AdminServlet ka alag session flow hai
+        if (path.startsWith("/AdminServlet")) {
+            HttpSession adminSess = req.getSession(false);
+            boolean adminLoggedIn = (adminSess != null &&
+                Boolean.TRUE.equals(adminSess.getAttribute("adminLoggedIn")));
+            if (!adminLoggedIn) {
+                res.sendRedirect(req.getContextPath() + "/AdminLoginServlet");
+                return;
+            }
+            // Admin authenticated → aage bhejo (no further checks needed)
+            res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            res.setHeader("Pragma",        "no-cache");
+            res.setHeader("Expires",       "0");
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Regular user session check karo
         HttpSession session = req.getSession(false);
         boolean loggedIn = (session != null &&
                             session.getAttribute("loggedUser") != null);
@@ -88,17 +106,6 @@ public class AuthFilter implements Filter {
             // Session nahi hai → user logged in nahi hai → Login page bhejo
             res.sendRedirect(req.getContextPath() + "/LoginServlet");
             return;
-        }
-
-        // Admin-only pages: /AdminServlet → sirf ADMIN role wale dekh sakte hain
-        if (path.startsWith("/AdminServlet")) {
-            String role = (String) session.getAttribute("role");
-            if (!"ADMIN".equals(role)) {
-                // Normal user admin try kare → Dashboard par bhejo with error
-                res.sendRedirect(req.getContextPath() +
-                    "/DashboardServlet?error=access_denied");
-                return;
-            }
         }
 
         // Authenticated pages ka caching rok do (browser back button se nahi aana chahiye)

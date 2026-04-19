@@ -13,31 +13,18 @@ import java.util.UUID;
 
 /**
  * ════════════════════════════════════════════════════════
- *  AdminServlet.java — Admin Panel Handler
+ *  AdminServlet.java — Admin Panel Handler (v2)
  * ════════════════════════════════════════════════════════
  *
- * YEH SERVLET KYA KARTA HAI?
- *   Admin ke liye sabse powerful page. Admin yahan se:
- *   - Saare users dekh aur block/unblock kar sakta hai
- *   - Saari auctions dekh sakta hai
- *   - Manually auction close kar sakta hai (winner declare)
- *   - Payment status update kar sakta hai
+ * SESSION CHECK: "adminLoggedIn" = true  (AdminLoginServlet set karta hai)
  *
- * URL: /AdminServlet
- * ACCESS: Sirf ADMIN role wale (AuthFilter check karta hai)
- *
- * ACTION-BASED ROUTING:
- *   GET  (koi action nahi)    → Admin dashboard dikhao
- *   GET  ?action=exportBidsCsv → CSV file download (read-only, GET theek hai)
- *   POST ?action=closeAuction  → Auction manually band karo (state-change)
- *   POST ?action=toggleUser    → User ko block ya unblock karo (state-change)
- *   POST ?action=updatePayment → Payment status update karo (state-change)
- *
- * SECURITY FIX (BidServlet ki tarah):
- *   - State-changing actions (closeAuction, toggleUser, updatePayment) ab
- *     POST method se handle hote hain — GET nahi.
- *   - CSRF Token: doGet() mein token generate hota hai, doPost() mein verify.
- *   - Isse CSRF attacks se protection milti hai.
+ * GET  (no action)         → Admin dashboard dikhao
+ * GET  ?action=exportBidsCsv → CSV download
+ * POST ?action=closeAuction  → Auction manually close
+ * POST ?action=toggleUser    → User block/unblock
+ * POST ?action=updatePayment → Payment status update
+ * POST ?action=deleteBid     → Single bid delete karo
+ * POST ?action=deleteItem    → Auction item + sab bids delete karo
  * ════════════════════════════════════════════════════════
  */
 @WebServlet("/AdminServlet")
@@ -48,17 +35,28 @@ public class AdminServlet extends HttpServlet {
     private final WinnerDAO      winnerDAO = new WinnerDAO();
     private final BidDAO         bidDAO    = new BidDAO();
 
+    // ── Session guard ─────────────────────────────────────────────────────────
+    private boolean isAdminLoggedIn(HttpServletRequest req) {
+        HttpSession session = req.getSession(false);
+        return session != null && Boolean.TRUE.equals(session.getAttribute("adminLoggedIn"));
+    }
+
     /**
-     * GET Request — Admin dashboard dikhao + read-only actions.
-     * State-changing actions (closeAuction, toggleUser, updatePayment) yahan NAHI hote.
+     * GET — dashboard + CSV export
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
+        // Admin session check
+        if (!isAdminLoggedIn(req)) {
+            res.sendRedirect(req.getContextPath() + "/AdminLoginServlet");
+            return;
+        }
+
         String action = req.getParameter("action");
 
-        // ── Action: Bid History CSV Export (read-only, GET OK hai) ───────────
+        // ── CSV Export ───────────────────────────────────────────────────────
         if ("exportBidsCsv".equals(action)) {
             int itemId;
             try {
@@ -81,7 +79,6 @@ public class AdminServlet extends HttpServlet {
 
             PrintWriter pw = res.getWriter();
             pw.println("Bid ID,Bidder,Bid Amount (INR),Bid Time,Is Winning");
-
             SimpleDateFormat dateFmt = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
             for (Bid b : bids) {
                 String bidTimeStr = (b.getBidTime() != null) ? dateFmt.format(b.getBidTime()) : "";
@@ -94,16 +91,11 @@ public class AdminServlet extends HttpServlet {
                 );
             }
             pw.flush();
-
-            com.auction.io.AuctionLogger.log(
-                "ADMIN_CSV_EXPORT | Item #" + itemId + " | " + itemTitle +
-                " | " + bids.size() + " bids"
-            );
             return;
         }
 
-        // ── Admin Dashboard dikhao ────────────────────────────────────────────
-        // CSRF token generate karo — POST forms mein use hoga
+        // ── Admin Dashboard ──────────────────────────────────────────────────
+        // CSRF token generate karo
         HttpSession session = req.getSession(true);
         String csrfToken = UUID.randomUUID().toString();
         session.setAttribute("adminCsrfToken", csrfToken);
@@ -112,8 +104,16 @@ public class AdminServlet extends HttpServlet {
         req.setAttribute("allUsers",   userDAO.getAllUsers());
         req.setAttribute("allItems",   itemDAO.getAllItems());
         req.setAttribute("allWinners", winnerDAO.getAllWinners());
+        req.setAttribute("allBids",    bidDAO.getAllBids());
 
-        // Success/error message (redirect ke baad dikhao)
+        // Counts for quick summary
+        long activeCount = itemDAO.getAllItems().stream()
+            .filter(i -> "ACTIVE".equals(i.getStatus())).count();
+        long closedCount = itemDAO.getAllItems().stream()
+            .filter(i -> "CLOSED".equals(i.getStatus())).count();
+        req.setAttribute("activeAuctionCount", activeCount);
+        req.setAttribute("closedAuctionCount", closedCount);
+
         String msg = req.getParameter("msg");
         if (msg != null) req.setAttribute("msg", msg);
 
@@ -121,21 +121,22 @@ public class AdminServlet extends HttpServlet {
     }
 
     /**
-     * POST Request — State-changing admin actions yahan handle hote hain.
-     * CSRF token verify hota hai pehle (BidServlet.doPost() ki tarah).
-     *
-     * POST ?action=closeAuction  → Auction close + winner declare
-     * POST ?action=toggleUser    → User block/unblock
-     * POST ?action=updatePayment → Payment status update
+     * POST — State-changing actions with CSRF protection
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        // ── CSRF Verification (BidServlet jaisi — one-time token) ─────────────
+        // Admin session check
+        if (!isAdminLoggedIn(req)) {
+            res.sendRedirect(req.getContextPath() + "/AdminLoginServlet");
+            return;
+        }
+
+        // ── CSRF Verification ────────────────────────────────────────────────
         HttpSession session = req.getSession(false);
         if (session == null) {
-            res.sendError(HttpServletResponse.SC_FORBIDDEN, "Session expired. Please log in again.");
+            res.sendError(HttpServletResponse.SC_FORBIDDEN, "Session expired.");
             return;
         }
 
@@ -143,21 +144,17 @@ public class AdminServlet extends HttpServlet {
         String sessToken = (String) session.getAttribute("adminCsrfToken");
 
         if (formToken == null || !formToken.equals(sessToken)) {
-            // Token mismatch → possible CSRF attack → 403 Forbidden
-            res.sendError(HttpServletResponse.SC_FORBIDDEN,
-                "Invalid CSRF token. Action rejected for security.");
+            res.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token.");
             return;
         }
-        // Token use ho gaya → invalidate karo (one-time use)
         session.removeAttribute("adminCsrfToken");
 
         String action = req.getParameter("action");
 
-        // ── Action: Auction manually close karo ──────────────────────────────
+        // ── Close Auction ────────────────────────────────────────────────────
         if ("closeAuction".equals(action)) {
             try {
                 int itemId = Integer.parseInt(req.getParameter("itemId"));
-                // Oracle Stored Procedure: { CALL determine_winner(itemId) }
                 itemDAO.closeAuctionAndDetermineWinner(itemId);
                 res.sendRedirect(req.getContextPath() + "/AdminServlet?msg=auction_closed");
             } catch (NumberFormatException e) {
@@ -166,11 +163,11 @@ public class AdminServlet extends HttpServlet {
             return;
         }
 
-        // ── Action: User ko block ya unblock karo ────────────────────────────
+        // ── Toggle User block/unblock ─────────────────────────────────────────
         if ("toggleUser".equals(action)) {
             try {
                 int    userId = Integer.parseInt(req.getParameter("userId"));
-                String active = req.getParameter("active"); // "true" ya "false"
+                String active = req.getParameter("active");
                 userDAO.setActiveStatus(userId, "true".equals(active));
                 res.sendRedirect(req.getContextPath() + "/AdminServlet?msg=user_updated");
             } catch (NumberFormatException e) {
@@ -179,11 +176,11 @@ public class AdminServlet extends HttpServlet {
             return;
         }
 
-        // ── Action: Payment status update karo ───────────────────────────────
+        // ── Update Payment Status ────────────────────────────────────────────
         if ("updatePayment".equals(action)) {
             try {
                 int    winnerId = Integer.parseInt(req.getParameter("winnerId"));
-                String status   = req.getParameter("status"); // "PAID", "PENDING", "FAILED"
+                String status   = req.getParameter("status");
                 winnerDAO.updatePaymentStatus(winnerId, status);
                 res.sendRedirect(req.getContextPath() + "/AdminServlet?msg=payment_updated");
             } catch (NumberFormatException e) {
@@ -192,11 +189,39 @@ public class AdminServlet extends HttpServlet {
             return;
         }
 
-        // Unknown action
+        // ── Delete Bid ───────────────────────────────────────────────────────
+        if ("deleteBid".equals(action)) {
+            try {
+                int bidId = Integer.parseInt(req.getParameter("bidId"));
+                boolean deleted = bidDAO.deleteBid(bidId);
+                res.sendRedirect(req.getContextPath() + "/AdminServlet?msg=" +
+                    (deleted ? "bid_deleted" : "error_bid_not_found"));
+            } catch (NumberFormatException e) {
+                res.sendRedirect(req.getContextPath() + "/AdminServlet?msg=error_invalid_id");
+            }
+            return;
+        }
+
+        // ── Delete Auction Item (+ its bids + its winners) ───────────────────
+        if ("deleteItem".equals(action)) {
+            try {
+                int itemId = Integer.parseInt(req.getParameter("itemId"));
+                // Order matters: winners → bids → item  (foreign key constraints)
+                winnerDAO.deleteWinnersForItem(itemId);
+                bidDAO.deleteBidsForItem(itemId);
+                boolean deleted = itemDAO.deleteItem(itemId);
+                res.sendRedirect(req.getContextPath() + "/AdminServlet?msg=" +
+                    (deleted ? "item_deleted" : "error_item_not_found"));
+            } catch (NumberFormatException e) {
+                res.sendRedirect(req.getContextPath() + "/AdminServlet?msg=error_invalid_id");
+            }
+            return;
+        }
+
         res.sendRedirect(req.getContextPath() + "/AdminServlet");
     }
 
-    // ── CSV Helper: value mein comma/quotes ho toh wrap karo ─────────────────
+    // ── CSV Helper ────────────────────────────────────────────────────────────
     private String csvVal(String val) {
         if (val == null) return "";
         if (val.contains(",") || val.contains("\"") || val.contains("\n")) {

@@ -70,7 +70,7 @@
     AuctionHub
   </div>
   <div class="nav-links">
-    <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-ghost btn-sm">Cancel</a>
+    <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-ghost btn-sm">✕ Cancel</a>
   </div>
 </nav>
 

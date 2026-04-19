@@ -18,10 +18,10 @@
   </div>
   <div class="nav-links">
     <span>Welcome, <strong>${sessionScope.username}</strong></span>
-    <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-ghost btn-sm">Home</a>
+    <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-ghost btn-sm">🏠 Home</a>
     <a href="${pageContext.request.contextPath}/ProfileServlet"   class="btn btn-outline btn-sm">👤 Profile</a>
-    <a href="${pageContext.request.contextPath}/AuctionItemServlet" class="btn btn-outline btn-sm">+ List Item</a>
-    <a href="${pageContext.request.contextPath}/LogoutServlet"      class="btn btn-ghost btn-sm">Logout</a>
+    <a href="${pageContext.request.contextPath}/AuctionItemServlet" class="btn btn-outline btn-sm">➕ List Item</a>
+    <a href="${pageContext.request.contextPath}/LogoutServlet"      class="btn btn-ghost btn-sm">🚪 Logout</a>
   </div>
 </nav>
 
@@ -31,7 +31,7 @@
   <div class="search-bar">
     <form action="${pageContext.request.contextPath}/SearchServlet" method="get">
       <input type="text" name="q" placeholder="Search auctions...">
-      <button type="submit" class="btn btn-primary">Search</button>
+      <button type="submit" class="btn btn-primary">🔍 Search</button>
     </form>
   </div>
 
@@ -75,7 +75,7 @@
               </div>
 
               <a href="${pageContext.request.contextPath}/BidServlet?itemId=${item.itemId}"
-                 class="btn btn-primary btn-full">Bid Now</a>
+                 class="btn btn-primary btn-full">🔨 Bid Now</a>
             </div>
           </div>
         </c:forEach>

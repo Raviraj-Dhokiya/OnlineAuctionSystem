@@ -230,6 +230,63 @@ public class BidDAO {
         return 0;
     }
 
+    /**
+     * Get ALL bids across ALL auctions — Admin panel ke liye
+     * Returns bids joined with item title and bidder username
+     */
+    public List<Bid> getAllBids() {
+        List<Bid> bids = new ArrayList<>();
+        String sql = "SELECT b.*, u.username AS bidder_name, i.title AS item_title " +
+                     "FROM bids b " +
+                     "JOIN users u ON b.bidder_id = u.user_id " +
+                     "JOIN auction_items i ON b.item_id = i.item_id " +
+                     "ORDER BY b.bid_time DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Bid bid = mapBid(rs);
+                bid.setItemTitle(rs.getString("item_title"));
+                bids.add(bid);
+            }
+        } catch (SQLException e) {
+            System.err.println("[BidDAO] getAllBids error: " + e.getMessage());
+        }
+        return bids;
+    }
+
+    /**
+     * Delete a bid by ID — Admin only
+     * @return true if deleted, false if not found or error
+     */
+    public boolean deleteBid(int bidId) {
+        String sql = "DELETE FROM bids WHERE bid_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bidId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("[BidDAO] deleteBid error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Delete all bids for a specific auction item — used when deleting an item
+     */
+    public boolean deleteBidsForItem(int itemId) {
+        String sql = "DELETE FROM bids WHERE item_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, itemId);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("[BidDAO] deleteBidsForItem error: " + e.getMessage());
+            return false;
+        }
+    }
+
     // ── HELPER ───────────────────────────────────────────────────────────────
 
     private Bid mapBid(ResultSet rs) throws SQLException {

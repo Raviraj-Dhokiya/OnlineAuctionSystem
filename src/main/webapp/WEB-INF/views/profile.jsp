@@ -20,7 +20,7 @@
   <div class="nav-links">
     <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-ghost btn-sm">← Dashboard</a>
     <a href="${pageContext.request.contextPath}/ProfileServlet"   class="btn btn-outline btn-sm">👤 Profile</a>
-    <a href="${pageContext.request.contextPath}/LogoutServlet"    class="btn btn-ghost btn-sm">Logout</a>
+    <a href="${pageContext.request.contextPath}/LogoutServlet"    class="btn btn-ghost btn-sm">🚪 Logout</a>
   </div>
 </nav>
 
@@ -92,7 +92,7 @@
           </div>
 
           <div class="form-group">
-            <label for="fullName">Full Name *</label>
+            <label for="fullName">👤 Full Name *</label>
             <input type="text" id="fullName" name="fullName"
                    value="${profileUser.fullName}" placeholder="Enter your full name" required>
           </div>
@@ -105,7 +105,7 @@
           </div>
 
           <div class="form-group">
-            <label for="phone">Phone Number</label>
+            <label for="phone">📱 Phone Number</label>
             <input type="tel" id="phone" name="phone"
                    value="${profileUser.phone}" placeholder="e.g. 9876543210">
           </div>
@@ -117,13 +117,13 @@
           </small>
 
           <div class="form-group">
-            <label for="newPassword">New Password</label>
+            <label for="newPassword">🔑 New Password</label>
             <input type="password" id="newPassword" name="newPassword"
                    placeholder="8+ chars, uppercase, digit, special char">
           </div>
 
           <div class="form-group">
-            <label for="confirmPassword">Confirm New Password</label>
+            <label for="confirmPassword">🔑 Confirm New Password</label>
             <input type="password" id="confirmPassword" name="confirmPassword"
                    placeholder="Re-enter the same password">
           </div>
@@ -144,7 +144,7 @@
             <div class="empty-state-mini">
               <span>🎯</span>
               <p>You haven't placed any bids yet.</p>
-              <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-outline btn-sm">Browse Auctions</a>
+              <a href="${pageContext.request.contextPath}/DashboardServlet" class="btn btn-outline btn-sm">🔍 Browse Auctions</a>
             </div>
           </c:when>
           <c:otherwise>
@@ -153,7 +153,7 @@
                 <tr>
                   <th>Item</th>
                   <th>Bid Amount (₹)</th>
-                  <th>Date & Time</th>
+                  <th>Date &amp; Time</th>
                   <th>Status</th>
                 </tr>
               </thead>
