@@ -1,25 +1,45 @@
 <div align="center">
+
+  <img src="src/main/webapp/css/logo.png" alt="Auction Logo" width="90" />
+
   <h1>🏆 Online Auction System</h1>
   <p><strong>Advanced Java Technologies — Academic Project</strong></p>
+
+  <p>
+    <img src="https://img.shields.io/badge/Java-11+-orange?style=flat-square&logo=java" />
+    <img src="https://img.shields.io/badge/Maven-Build-blue?style=flat-square&logo=apachemaven" />
+    <img src="https://img.shields.io/badge/Oracle%20DB-21c%20XE-red?style=flat-square&logo=oracle" />
+    <img src="https://img.shields.io/badge/Tomcat-9.x-yellow?style=flat-square&logo=apachetomcat" />
+    <img src="https://img.shields.io/badge/Jersey%20JAX--RS-REST%20API-green?style=flat-square" />
+  </p>
+
 </div>
-
-<br />
-
-Welcome to the **Online Auction System**, a comprehensive web application built to demonstrate advanced concepts in Java programming. This project follows an n-tier architecture and incorporates features such as real-time bidding, simple authentication (direct registration/login), fully functional mock payment portals, live socket servers, REST APIs, and database management.
-
 
 ---
 
-## 🛠️ Technologies Used
+## 📌 Overview
 
-- **Backend:** Java 11+, Java Servlets, JSP, JSTL
-- **Database:** Oracle Database 21c XE, Raw JDBC, Apache DBCP2 (Optimized)
-- **Networking:** TCP/UDP Sockets, Java RMI (Remote Method Invocation)
-- **Web Services & APIs:** REST API (Jersey JAX-RS), Java Mail API
-- **Build & Server:** Maven, Apache Tomcat (Embedded plugin available)
-- **Frontend:** HTML5, CSS3, Vanilla JavaScript
-- **Security & Patterns:** BCrypt, Singleton, Factory, Observer, Decorator, Builder
-- **Libraries & Tools:** iText PDF (Exporting), Apache Commons IO & FileUpload
+**Online Auction System** is a full-stack Java web application demonstrating every major topic of the Advanced Java Technologies curriculum. It features real-time TCP/UDP socket bidding, Java RMI, REST APIs, JDBC with connection pooling, Java Mail, Design Patterns, and more — all wired together in a clean, n-tier MVC architecture.
+
+> Developed as an academic project for *Advanced Java Technologies* using Java Servlets, JSP, Oracle DB, and Maven.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Backend** | Java 11, Java Servlets (javax.servlet 4.0.1), JSP 2.3, JSTL 1.2 |
+| **Database** | Oracle Database 21c XE, Raw JDBC (ojdbc8 19.3), Apache DBCP2 + Pool2 |
+| **Networking** | TCP Sockets (Chat + Bid Notifications), UDP Multicast (Expiry Alerts) |
+| **RMI** | Java RMI Registry (Port 1099) — Remote bidding interface |
+| **REST API** | Jersey JAX-RS 2.41, Jackson JSON 2.15.2 |
+| **Email** | JavaMail (javax.mail 1.6.2) — Bid winner notifications |
+| **Security** | BCrypt (jBCrypt 0.4), CSRF token validation, Session-based Auth |
+| **File Handling** | Apache Commons FileUpload 1.5, Commons IO 2.13.0 |
+| **PDF Export** | iText PDF 5.5.13.3 — Downloadable bid history |
+| **Frontend** | HTML5, Vanilla CSS3, Vanilla JavaScript |
+| **Build & Deploy** | Maven 3, Apache Tomcat 7 Maven Plugin (embedded), WAR packaging |
 
 ---
 
@@ -27,122 +47,247 @@ Welcome to the **Online Auction System**, a comprehensive web application built 
 
 ```text
 OnlineAuctionSystem/
-├── pom.xml                   # Maven dependencies and build config
-├── database_schema.sql       # Database schema creation script
-├── env.bat                   # Database credentials (to be created)
-├── startApp.bat              # Quick start script for Windows
-├── README.md                 # Project documentation
+├── pom.xml                          # Maven build config & all dependencies
+├── database_schema.sql              # Full Oracle DB schema (tables, sequences)
+├── env.bat                          # DB credentials (created by you, git-ignored)
+├── startApp.bat                     # One-click Windows startup script
+├── README.md                        # Project documentation
 └── src/main/
     ├── java/com/auction/
-    │   ├── model/            # Data models (User, AuctionItem, Bid)
-    │   ├── dao/              # Database Access Objects (JDBC/Hibernate)
-    │   ├── servlet/          # Controllers (Login, Dashboard, Bid)
-    │   ├── filter/           # Authentication and Security filters
-    │   ├── network/          # TCP/UDP Socket Servers
-    │   ├── rmi/              # Remote Method Invocation implementation
-    │   ├── mail/             # Java Mail Service integration
-    │   ├── webservice/       # RESTful API Endpoints
-    │   ├── io/               # File I/O operations and Logs
-    │   ├── security/         # Password hashing and Utils
-    │   ├── patterns/         # Gang of Four Design Patterns
-    │   └── util/             # Utility classes and Database connections
+    │   ├── model/                   # POJOs / Data Models
+    │   │   ├── AuctionItem.java
+    │   │   ├── AutoBid.java
+    │   │   ├── Bid.java
+    │   │   ├── User.java
+    │   │   ├── Watchlist.java
+    │   │   └── Winner.java
+    │   ├── dao/                     # JDBC Data Access Objects
+    │   │   ├── AuctionItemDAO.java
+    │   │   ├── AutoBidDAO.java
+    │   │   ├── BidDAO.java
+    │   │   ├── UserDAO.java
+    │   │   ├── WatchlistDAO.java
+    │   │   └── WinnerDAO.java
+    │   ├── servlet/                 # HTTP Controllers (Servlets)
+    │   │   ├── AuctionItemServlet.java
+    │   │   ├── AutoBidServlet.java
+    │   │   ├── AutoBidProcessorServlet.java
+    │   │   ├── BidServlet.java
+    │   │   ├── BidPollServlet.java
+    │   │   ├── ChatSendServlet.java
+    │   │   ├── ChatPollServlet.java
+    │   │   ├── DashboardServlet.java
+    │   │   ├── DownloadBidsPdfServlet.java
+    │   │   ├── LoginServlet.java
+    │   │   ├── LogoutServlet.java
+    │   │   ├── PaymentServlet.java
+    │   │   ├── ProfileServlet.java
+    │   │   ├── RegisterServlet.java
+    │   │   ├── SearchServlet.java
+    │   │   ├── WatchlistServlet.java
+    │   │   ├── AdminServlet.java
+    │   │   └── AdminLoginServlet.java
+    │   ├── filter/                  # Servlet Filters
+    │   │   └── AuthFilter.java      # Session-based authentication guard
+    │   ├── network/                 # TCP/UDP Socket Servers
+    │   │   ├── AppStartupListener.java
+    │   │   ├── AuctionChatServer.java
+    │   │   ├── AuctionExpiryChecker.java
+    │   │   └── BidNotificationServer.java
+    │   ├── rmi/                     # Java RMI
+    │   │   ├── AuctionRMIInterface.java
+    │   │   ├── AuctionRMIServer.java
+    │   │   └── AuctionRMIClient.java
+    │   ├── mail/                    # Email Notifications
+    │   │   └── AuctionMailService.java
+    │   ├── webservice/              # REST API Endpoints (Jersey JAX-RS)
+    │   │   ├── AuctionRestAPI.java
+    │   │   ├── BidRestAPI.java
+    │   │   └── WinnerRestAPI.java
+    │   ├── io/                      # File I/O & Logging
+    │   │   └── AuctionLogger.java
+    │   ├── security/                # Password Hashing & Utils
+    │   │   └── SecurityUtil.java
+    │   ├── patterns/                # GoF Design Patterns
+    │   │   ├── AuctionBidNotifier.java  (Observer)
+    │   │   ├── AuctionItemBuilder.java  (Builder)
+    │   │   ├── AuctionItemFactory.java  (Factory)
+    │   │   └── PremiumBidDecorator.java (Decorator)
+    │   └── util/                    # DB Connection Pool
+    │       └── DBConnection.java    (Singleton + DBCP2)
     └── webapp/
-        ├── css/              # Stylesheets
-        ├── js/               # Client-side validation and live bidding
+        ├── css/
+        │   ├── style.css            # Global dark-themed stylesheet
+        │   └── logo.png             # Application logo
+        ├── js/
+        │   └── bid-live.js          # Real-time bid polling (AJAX)
         └── WEB-INF/
-            ├── web.xml       # Deployment descriptor
-            └── views/        # JSP templates for rendering
+            ├── web.xml              # Deployment descriptor (Servlets, Filters, Jersey)
+            └── views/              # JSP Templates
+                ├── dashboard.jsp
+                ├── item-detail.jsp  # Live bidding UI + chat
+                ├── add-item.jsp
+                ├── search-results.jsp
+                ├── watchlist.jsp
+                ├── payment.jsp
+                ├── profile.jsp
+                ├── login.jsp
+                ├── register.jsp
+                ├── admin.jsp
+                ├── admin-login.jsp
+                ├── error-403.jsp
+                ├── error-404.jsp
+                └── error-500.jsp
 ```
 
 ---
 
-## 📖 Chapter-Wise Implementation (Syllabus Mapping)
+## 📖 Syllabus / Unit-Wise Implementation
 
-This project strictly follows the Advanced Java Technologies curriculum, featuring practical tools mapping to specific chapters:
-
-* **Unit 1: Introduction to Application Programming**
-  * Built an optimal **n-tier architecture** incorporating Client, Web Controller (Servlet), Business Logic, Data Access (DAO), and Database layers.
-* **Unit 2: Java I/O**
-  * **`AuctionLogger.java`:** Utilized `FileStreams` and `RandomAccessFile` to export auction bidding records sequentially to CSV files and system logs securely. 
-* **Unit 3: Java Networking**
-  * **`BidNotificationServer.java` & `AuctionChatServer.java`:** Implemented TCP Sockets for real-time bid broadcasting and per-auction chat rooms. Used UDP datagrams to multicast "Ending soon" alerts seamlessly.
-* **Unit 4: Java Database Connectivity (JDBC)**
-  * Established secure DB connectivity via Oracle JDBC driver. Utilized `PreparedStatement`, `CallableStatement`, `ResultSet`, and `MetaData` APIs in the DAO layer securely. Stored items via BLOB data types.
-* **Unit 5: Java RMI (Remote Method Invocation)**
-  * **`AuctionRMIServer` & `AuctionRMIClient`:** Registered services over an RMI Registry (`port 1099`) defining stubs and skeletons for remote independent interactions and console-based bidding.
-* **Unit 6: Java Servlets & JSP**
-  * Used `HttpServlet` API to serve pages and endpoints (e.g., `PaymentServlet` for end-to-end mock payment workflows). Utilized sessions and cookies for authentication tracking, configured `web.xml` deployment descriptors, implemented Filters, and served dynamic JSP views avoiding CGI bottlenecks.
-* **Unit 7: Web Services, REST APIs, & Java Mail**
-  * **`AuctionRestAPI.java`:** Exposed clean REST APIs returning real-time JSON for checking item catalogs, prices, and past winners. Used Java Mail APIs (`AuctionMailService.java`) for email notifications.
-* **Unit 8: Design Patterns & Frameworks**
-  * Heavily used **Creational, Structural, and Behavioral Design Patterns**:
-    * *Singleton:* For DB connections and `AuctionManager`.
-    * *Factory:* `AuctionItemFactory` dynamic instantiation.
-    * *Observer:* Broadcasting bid updates (`BidObserver`).
-    * *Decorator:* Extending bids natively (`PremiumBidDecorator`).
-    * *Builder:* Streamlining object creations without complex constructors.
+| Unit | Topic | Implementation |
+|---|---|---|
+| **Unit 1** | N-Tier Application Architecture | Client → Servlet → DAO → Oracle DB pipeline; JSP Views separated from business logic |
+| **Unit 2** | Java I/O | `AuctionLogger.java` — FileStreams, ReversedLinesFileReader for memory-efficient backward log reading, CSV export |
+| **Unit 3** | Java Networking | `BidNotificationServer.java` — TCP broadcast for live bids; `AuctionChatServer.java` — per-auction TCP chat rooms; `AuctionExpiryChecker.java` — UDP "Ending Soon" multicast alerts |
+| **Unit 4** | JDBC | `DBConnection.java` (Singleton + Apache DBCP2 pool); `PreparedStatement`, `CallableStatement`, `ResultSet`, BLOB image storage across all DAOs |
+| **Unit 5** | Java RMI | `AuctionRMIServer` + `AuctionRMIClient` over port 1099 — remote bidding via console |
+| **Unit 6** | Servlets & JSP | 18 Servlets covering all features; Sessions + Cookies for auth; `AuthFilter.java` guards all protected URLs; `web.xml` deployment descriptor; JSTL + EL in JSP views |
+| **Unit 7** | REST APIs & Java Mail | `AuctionRestAPI`, `BidRestAPI`, `WinnerRestAPI` (Jersey JAX-RS, JSON); `AuctionMailService.java` for email alerts on auction end |
+| **Unit 8** | Design Patterns | Observer (`AuctionBidNotifier`), Factory (`AuctionItemFactory`), Builder (`AuctionItemBuilder`), Decorator (`PremiumBidDecorator`), Singleton (`DBConnection`, `AuctionManager`) |
 
 ---
 
-## ✨ Recent Optimizations & Architectural Fixes
-* **N+1 Database Query Elimination**: Replaced loop-based database spamming over lists of active auctions with a highly efficient `LEFT JOIN` counting subquery inside `AuctionItemDAO`, solving crippling dashboard bottlenecks and eliminating `ORA-22848` CLOB compatibility issues.
-* **Efficient Memory Mapping (Logs)**: `AuctionLogger.java` utilizes `ReversedLinesFileReader` (Apache Commons IO) to sequentially read huge system logs backwards instead of loading the entire heavy footprint linearly into RAM row-by-row.
-* **REST & Backend Security Hardening**: Removed insecure endpoints blindly trusting API JSON request bodies originally inside `AuctionRestAPI.java`, now strictly authenticating and verifying session IDs across the separated `BidRestAPI.java` and `WinnerRestAPI.java` files. Prevented sellers natively from legally bidding on their own product lists (`BidServlet.java`).
-* **Factory Deployment & Rigorous Validation**: Fully leveraged `AuctionItemFactory.java` mapping inside `AuctionItemServlet.java` reducing redundant processing. Enforced server-side checks rejecting weak listings logically and cleanly bypassed 403 Forbidden issues during picture uploads by unwrapping `csrfToken` correctly out of `multipart/form-data` chunks.
-* **Dependency & Codebase Purge**: Terminated massive unused `hibernate-core` and legacy `log4j-core` plugins from the `pom.xml`, drastically reducing final `.war` compiler bloat. Scrubbed defunct mail/observer mock code keeping the overall design logic slim and impressive!
+## ✨ Key Features
+
+- 🔐 **Authentication** — BCrypt-hashed passwords, session/cookie management, CSRF-protected forms
+- 📦 **Auction Item Management** — Create, edit, delete listings with image upload (multipart/form-data)
+- 💰 **Live Bidding** — Real-time bid updates via AJAX polling (`bid-live.js` + `BidPollServlet`)
+- 🤖 **Auto-Bid** — Set a maximum bid; `AutoBidProcessorServlet` automatically outbids on your behalf
+- 💬 **Per-Auction Chat** — TCP socket chat rooms per item, polled via `ChatPollServlet`
+- 🔔 **Notifications** — UDP socket "Ending Soon" alerts + Java Mail winner emails
+- 👀 **Watchlist** — Save and track favourite auctions
+- 🔍 **Search** — Full-text item search via `SearchServlet`
+- 📄 **PDF Downloads** — `DownloadBidsPdfServlet` exports bid history via iText PDF
+- 🛡️ **Admin Panel** — Manage users, items, and bids from `admin.jsp` (separate admin login)
+- 🌐 **REST API** — JSON endpoints for items, bids, and winners (Jersey JAX-RS)
+- 💳 **Mock Payment** — `PaymentServlet` simulates end-to-end payment workflow after winning
 
 ---
 
-## 🚀 Run the Project: Step-by-Step Guide
+## ⚙️ Recent Optimizations & Fixes
+
+- **N+1 Query Elimination** — Replaced loop-based DB calls on the dashboard with a single `LEFT JOIN` subquery inside `AuctionItemDAO`, resolving `ORA-22848` CLOB issues and boosting performance drastically.
+- **Memory-Efficient Log Reading** — `AuctionLogger.java` uses Apache Commons IO `ReversedLinesFileReader` to read large logs bottom-up without loading the entire file into RAM.
+- **REST API Security Hardening** — Removed insecure session-less endpoints from `AuctionRestAPI.java`; introduced dedicated `BidRestAPI.java` and `WinnerRestAPI.java` with strict session verification.
+- **Seller-Bidding Prevention** — `BidServlet.java` now natively blocks sellers from bidding on their own listings.
+- **Factory Pattern Integration** — `AuctionItemFactory.java` fully wired into `AuctionItemServlet.java`, reducing redundant instantiation logic.
+- **CSRF Fix for File Uploads** — Correctly unwraps `csrfToken` from `multipart/form-data` chunks, eliminating 403 Forbidden errors during image uploads.
+- **Dependency Cleanup** — Removed dead `hibernate-core` and `log4j-core` from `pom.xml`, drastically reducing WAR size.
+
+---
+
+## 🚀 Setup & Run Guide
 
 ### 1️⃣ Prerequisites
-Make sure you have installed the following software on your machine:
-- **Java JDK 11+**
-- **Oracle Database XE 21c** (or compatible)
-- **Maven**
-- **Apache Tomcat 9.x** (optional, you can use the embedded maven plugin)
+
+Make sure the following are installed:
+
+| Tool | Version |
+|---|---|
+| Java JDK | 11 or higher |
+| Oracle Database XE | 21c (or compatible) |
+| Maven | 3.6+ |
+| (Optional) Apache Tomcat | 9.x |
+
+---
 
 ### 2️⃣ Database Setup
-1. Launch **Oracle XE** and connect via SQL Developer or SQL*Plus as SYSTEM.
-2. Create the project workspace/user:
+
+1. Open **SQL Developer** or **SQL\*Plus** and connect as `SYSTEM`.
+2. Create the project user:
    ```sql
    CREATE USER auction_user IDENTIFIED BY auction_pass;
    GRANT CONNECT, RESOURCE, DBA TO auction_user;
    ```
-3. Connect strictly as `auction_user`.
-4. Locate the file `database_schema.sql` at the root folder and run it to construct tables (users, items, bids...).
+3. Reconnect as `auction_user`.
+4. Run the SQL schema file from the project root:
+   ```sql
+   @database_schema.sql
+   ```
+   This creates all tables: `USERS`, `AUCTION_ITEMS`, `BIDS`, `AUTO_BIDS`, `WATCHLIST`, `WINNERS`, etc.
 
-### 3️⃣ Configure Environment Properties
-The project loads configurations dynamically. Create a file named **`env.bat`** (at root directory) bridging your DB:
+---
+
+### 3️⃣ Configure `env.bat`
+
+Create a file named **`env.bat`** in the project root with your DB credentials:
+
 ```bat
-:: env.bat
+:: env.bat — DO NOT commit this file to git
 set DB_URL=jdbc:oracle:thin:@localhost:1521:XE
 set DB_USER=auction_user
 set DB_PASS=auction_pass
 ```
 
+> ⚠️ `env.bat` is already in `.gitignore` — never push your credentials.
 
-### 4️⃣ Booting up Localhost (How to Run)
-The application comes with the Windows utility script meant to simplify boot processes!
+---
 
-1. Open your terminal in the directory where `startApp.bat` and `pom.xml` reside.
-2. Run the batch file natively:
-   ```bat
-   startApp.bat
-   ```
-   *(Note: This completely packages your MAVEN target, bridges `env.bat`, starts Tomcat, and deploys it automatically.)*
+### 4️⃣ Run the Application
 
-### 🌐 Checking Output (Localhost Port)
-Once successfully compiled and booted, the Tomcat server operates exclusively on the following localhost port address in your browser:
+Open a terminal in the project root and run:
 
-👉 **URL:** [http://localhost:8080](http://localhost:8080)
-- *Default Port check: `8080`*
-- *RMI Port: `1099`*
-- *Socket Notification Port: `9090`*
+```bat
+startApp.bat
+```
 
-Explore, Register a brand-new user on localhost, publish Items, bid via chat seamlessly, and win the auctions!
+This script will:
+1. Load `env.bat` (DB credentials)
+2. Run `mvn clean package` to compile and build the WAR
+3. Deploy and start the embedded Tomcat server
+
+---
+
+### 🌐 Access the Application
+
+Once started, open your browser and go to:
+
+| Service | URL / Port |
+|---|---|
+| **Web App** | [http://localhost:8080](http://localhost:8080) |
+| **RMI Registry** | Port `1099` |
+| **Bid Notification Socket** | Port `9090` |
+| **Chat Socket** | Port `9091` |
+
+---
+
+### 🧭 Quick Start Flow
+
+1. **Register** a new user → `/register`
+2. **Login** → `/login`
+3. **Browse** active auctions on the **Dashboard**
+4. **Add Item** to create your own auction listing
+5. **Bid** on any live item — bids refresh live every 3 seconds
+6. **Chat** in the per-auction chat room
+7. **Watchlist** items you're interested in
+8. **Download** your bid history as a PDF
+9. When you win — complete the **Mock Payment** flow
+
+---
+
+## 🔗 REST API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/auctions` | List all active auction items (JSON) |
+| `GET` | `/api/auctions/{id}` | Get details of a specific item |
+| `POST` | `/api/bids` | Place a bid (session-authenticated) |
+| `GET` | `/api/winners` | Get list of past auction winners |
+
+---
 
 <div align="center">
   <br/>
-  <b>Made to demonstrate advanced Java Engineering</b>
+  <b>Built to demonstrate Advanced Java Engineering</b><br/>
+  <sub>Java Servlets • JSP • JDBC • Sockets • RMI • REST • Design Patterns</sub>
 </div>
