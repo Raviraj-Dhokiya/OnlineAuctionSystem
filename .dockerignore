@@ -1,0 +1,10 @@
+target/
+*.bat
+database_schema.sql
+.git/
+.github/
+.vscode/
+.idea/
+README.md
+Dockerfile
+.dockerignore
